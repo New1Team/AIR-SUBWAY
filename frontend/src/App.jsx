@@ -1,28 +1,25 @@
-  import { Routes, Route } from "react-router"
-import NotFound from '@pages/NotFound.jsx'
-import Maps from '@pages/Maps.jsx'
-import Card from '@pages/Card.jsx'
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/home";
+import Maps from "./pages/Maps";
+import Card from "./pages/Card";
+import NotFound from "./pages/NotFound";
 
-
-const paths = [
-  { path: "/map", element: <Maps/> },
-  { path: "*", element: <NotFound /> },
-  {path: "/", element: <Card />},
-]
-
-
-function App() {
-
+const SubwayPage = () => {
   return (
     <>
-
-      <Routes>
-        {paths?.map((v, i) => <Route key={i} path={v.path} element={v.element} />)}
-      </Routes>
+      <Card />
     </>
+  );
+};
 
-  )
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/subway" element={<SubwayPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-
-export default App
+export default App;
