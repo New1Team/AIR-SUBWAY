@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Map, CustomOverlayMap } from "react-kakao-maps-sdk";
 import { api } from "@utils/network.js";
+import '../assets/Maps.css';
 
 
 const Maps = ({ year }) => {
