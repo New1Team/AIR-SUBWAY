@@ -3,9 +3,9 @@ from sqlalchemy import create_engine, inspect
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
-from settings import settings
+from utils.settings import settings
 import os
-from routers import data, spark
+from routers import data, table_add
 
 
 
@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 app.include_router(data.router)
-app.include_router(spark.router)
+app.include_router(table_add.router)
 
 @app.get("/")
 def read_root():
