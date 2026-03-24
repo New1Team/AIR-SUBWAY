@@ -1,11 +1,46 @@
 from pyspark.sql import SparkSession, Row
 from fastapi import APIRouter
 import pandas as pd
-from utils.settings import settings
-from utils.config import db_properties, startup, shutdown, get_spark
 import os
 from pydantic import BaseModel
 from typing import List, Dict
+from sqlalchemy import create_engine, inspect
+from utils.settings import settings
+
+spark = None
+engine_mariadb = create_engine(settings.mariadb_host)
+
+db_properties = {
+  "user": settings.maria_user,
+  "password": settings.maria_password,
+  "driver": "org.mariadb.jdbc.Driver"
+  }
+
+# API 함수
+def startup():
+  global spark
+  try:
+    spark = SparkSession.builder \
+      .appName("1team") \
+      .master(settings.spark_url) \
+      .config("spark.jars", settings.jar_path) \
+      .config("spark.driver.host", settings.host_ip) \
+      .config("spark.driver.bindAddress", "0.0.0.0") \
+      .config("spark.driver.port", "10000") \
+      .config("spark.blockManager.port", "10001") \
+      .config("spark.cores.max", "2") \
+      .config("spark.sql.sources.jdbc.driver.kind", "mariadb") \
+      .config("spark.sql.dialect", "mysql") \
+      .getOrCreate()
+    print("성공!")
+  except Exception as e:
+    print(f"Failed to create Spark session: {e}")
+  return spark
+
+def shutdown():
+  if spark:
+    spark.stop()
+    
 
 router = APIRouter(
     prefix="/spark",
@@ -36,7 +71,6 @@ def shutdown_event():
 # 사용방법은 md로 넣어둘게요.
 @router.post('/file_upload')
 def read(fileCon: FileList):
-  spark_session = get_spark()
   current_path = os.path.dirname(os.path.abspath(__file__))
   data_path = os.path.join(current_path, "data")
   # all_files = os.listdir(data_path)
@@ -53,7 +87,7 @@ def read(fileCon: FileList):
   df2 = df[cols].copy()
   df2 = df2.rename(columns=newCols)
   print("df2:  ",df2)
-  sDf = spark_session.createDataFrame(df2)
+  sDf = spark.createDataFrame(df2)
       
   # 테이블 생성 및 적재
   try:
@@ -68,7 +102,7 @@ def read(fileCon: FileList):
   except Exception as e:
     print(f" 적재실패: {e}")
 
-  check_df = spark_session.read.jdbc(settings.db_url, table="coordinate", properties=db_properties)
+  check_df = spark.read.jdbc(settings.db_url, table="coordinate", properties=db_properties)
   print("개수 ", check_df.count())
   check_df.show()
   return {'message': '적재 성공'}
