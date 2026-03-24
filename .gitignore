@@ -30,3 +30,7 @@ dist-ssr
 
 # data 폴더 제외
 data/
+
+#파이썬내 자동실행이라 충돌이 자주 일어나는 부분
+__pycache__/
+*.pyc
