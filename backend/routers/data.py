@@ -225,7 +225,7 @@ def get_weekend_line_stations(year: int, line: str, spark: SparkSession = Depend
 def get_map(year: int, category: str = None, spark: SparkSession = Depends(get_spark)):
     try:
         sql = f"""(
-            SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류`,          
+            SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류`, `광고_집행_전략`,     
                 CAST(`주거_비중` AS DOUBLE) AS `주거_비중` , 
                 CAST(`산업_비중` AS DOUBLE) AS `산업_비중` , 
                 CAST(`문화_비중` AS DOUBLE) AS `문화_비중`,
