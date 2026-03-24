@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useMemo } from 'react';
 import axios from 'axios';
 import '../assets/Dashboard.css';
 import Maps from './Maps';
@@ -18,7 +18,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload?.length) {
-    const d = payload[0].payload;
+    const item = payload[0].payload;
     return (
       <div
         style={{
@@ -29,12 +29,12 @@ const CustomTooltip = ({ active, payload }) => {
           boxShadow: '0 6px 16px rgba(15, 23, 42, 0.08)',
         }}
       >
-        <p style={{ margin: 0, fontWeight: 800, color: '#111827' }}>{d.name}</p>
+        <p style={{ margin: 0, fontWeight: 800, color: '#111827' }}>{item.name}</p>
         <p style={{ margin: '4px 0 0 0', color: '#475569' }}>
-          출근 하차합: {Number(d.x ?? 0).toLocaleString()}
+          출근 하차합: {Number(item.x ?? 0).toLocaleString()}
         </p>
         <p style={{ margin: '2px 0 0 0', color: '#475569' }}>
-          퇴근 승차합: {Number(d.y ?? 0).toLocaleString()}
+          퇴근 승차합: {Number(item.y ?? 0).toLocaleString()}
         </p>
       </div>
     );
@@ -43,6 +43,8 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const Card = () => {
+  const MAX = 8000000;
+  const MID = MAX / 2; // 4000000 — X, Y축 정중앙
   const [selectedYear, setSelectedYear] = useState(2021);
   const [loading, setLoading] = useState(true);
 
@@ -149,6 +151,11 @@ const Card = () => {
     setHoveredLine(null);
     setHoverStations([]);
   };
+
+ 
+
+
+
 
   return (
     <div className="dashboard-wrapper">
@@ -309,58 +316,52 @@ const Card = () => {
               <div className="scatter-chart-box">
                 <ResponsiveContainer width="100%" height={380}>
                   <ScatterChart margin={{ top: 18, right: 24, bottom: 26, left: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="x"
-                      name="출근 하차"
-                      type="number"
-                      domain={['auto', 'auto']}
-                      tickCount={5}
-                      tickFormatter={(v) => Number(v).toLocaleString()}
-                      label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis
-                      dataKey="y"
-                      name="퇴근 승차"
-                      width={86}
-                      tickFormatter={(v) => Number(v).toLocaleString()}
-                      tick={{ fontSize: 12 }}
-                      label={{
-                        value: '승차합',
-                        angle: -90,
-                        position: 'insideLeft',
-                        offset: 14,
-                        style: { textAnchor: 'middle' },
-                      }}
-                    />
+                          <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="x"
+                          name="출근 하차"
+                          type="number"
+                          domain={[0, MAX]}
+                          ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                          tickFormatter={(v) => Number(v).toLocaleString()}
+                          label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis
+                          dataKey="y"
+                          name="퇴근 승차"
+                          domain={[0, MAX]}
+                          ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                          tickFormatter={(v) => Number(v).toLocaleString()}
+                          tick={{ fontSize: 12 }}
+                          label={{
+                            value: '퇴근 승차합',
+                            angle: -90,
+                            position: 'insideLeft',
+                            offset: 14,
+                            style: { textAnchor: 'middle' },
+                          }}
+                        />
 
-                    {/* --- 배경색 영역 추가 (ReferenceArea) --- */}
-                    {/* 1사분면 (우상단): 업무 중심지 - 출근 하차 많음 & 퇴근 승차 많음 */}
-                    <ReferenceArea x1={avg.x} y1={avg.y} fill="#fcc1c1" fillOpacity={0.4} /> 
-                    {/* 2사분면 (좌상단): 퇴근 유입지 - 출근 하차 적음 & 퇴근 승차 많음 */}
-                    <ReferenceArea x2={avg.x} y1={avg.y} fill="#ffe476" fillOpacity={0.4} />
-                    {/* 3사분면 (좌하단): 일반/저유동 - 둘 다 적음 */}
-                    <ReferenceArea x2={avg.x} y2={avg.y} fill="#72b9ff" fillOpacity={0.4} />
-                    {/* 4사분면 (우하단): 출근 유입지 - 출근 하차 많음 & 퇴근 승차 적음 */}
-                    <ReferenceArea x1={avg.x} y2={avg.y} fill="#7bffa9" fillOpacity={0.4} />
-                    {/* -------------------------------------- */}
-                    <ReferenceLine
-                      x={avg.x}
-                      stroke="red"
-                      strokeDasharray="4 4"
-                      label={{ value: '출근평균', position: 'top', fill: '#64748b', fontSize: 12 }}
-                    />
-                    <ReferenceLine
-                      y={avg.y}
-                      stroke="blue"
-                      strokeDasharray="4 4"
-                      label={{ value: '퇴근평균', position: 'right', fill: '#64748b', fontSize: 12 }}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Scatter name="역" data={data} fill="#6366f1" opacity={0.72} />
-                  </ScatterChart>
-                </ResponsiveContainer>
+                        {/* 4등분 배경 — 기준선은 정중앙 4,000,000 */}
+                        {/* 1사분면: 출근↑ 퇴근↑ → 업무 중심지 (빨강) */}
+                        <ReferenceArea x1={MID} x2={MAX} y1={MID} y2={MAX} fill="#fcc1c1" fillOpacity={0.4} />
+                        {/* 2사분면: 출근↓ 퇴근↑ → 퇴근 유입지 (노랑) */}
+                        <ReferenceArea x1={0} x2={MID} y1={MID} y2={MAX} fill="#ffe476" fillOpacity={0.4} />
+                        {/* 3사분면: 출근↓ 퇴근↓ → 일반/저유동 (파랑) */}
+                        <ReferenceArea x1={0} x2={MID} y1={0} y2={MID} fill="#72b9ff" fillOpacity={0.4} />
+                        {/* 4사분면: 출근↑ 퇴근↓ → 출근 유입지 (초록) */}
+                        <ReferenceArea x1={MID} x2={MAX} y1={0} y2={MID} fill="#7bffa9" fillOpacity={0.4} />
+
+                        {/* 중앙 기준선 */}
+                        <ReferenceLine x={MID} stroke="red" strokeDasharray="4 4" label={{ value: '출근평균', position: 'top', fill: '#64748b', fontSize: 12 }} />
+                        <ReferenceLine y={MID} stroke="blue" strokeDasharray="4 4" label={{ value: '퇴근평균', position: 'right', fill: '#64748b', fontSize: 12 }} />
+
+                        {/* Tooltip, Scatter 각각 한 번만 */}
+                        <Tooltip content={<CustomTooltip />} />
+                        <Scatter name="역" data={data} fill="#6366f1" opacity={0.72} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
               </div>
 
               <div className="scatter-info-bar">
