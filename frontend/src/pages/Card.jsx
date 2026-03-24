@@ -391,9 +391,9 @@ const Card = () => {
                   >
                     <div className="line-rank-header">
                       <span className="line-rank-title">
-                        {item.rn}위 {item.호선}
+                        {item.rn}위 {item.호선}호선
                       </span>
-                      <span className="line-rank-value">최고점 {fmt(item.weekend_peak)}</span>
+                      <span className="line-rank-value">유동인구수 {fmt(item.weekend_peak)}명</span>
                     </div>
 
                     <div className="line-rank-bar-wrap">
@@ -406,7 +406,7 @@ const Card = () => {
                     {hoveredLine === item.호선 && (
                       <div className="line-hover-box">
                         <div className="line-hover-title">
-                          {selectedYear}년 · {item.호선} 주말 유동 핵심역 TOP5
+                          {selectedYear}년 · {item.호선}호선 주말 유동 핵심역 TOP5
                         </div>
 
                         {hoverLoading ? (
