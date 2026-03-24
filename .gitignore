@@ -28,5 +28,8 @@ dist-ssr
 .env.*
 !.env.example
 
+pycache/
+*.pyc
+
 # data 폴더 제외
 data/
