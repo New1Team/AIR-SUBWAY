@@ -2,217 +2,14 @@ from db import get_data
 import streamlit as st
 import pandas as pd
 import altair as alt
-import math
+from components.navbar import render_navbar
+from components.style_loader import load_css
 
 st.set_page_config(page_title="Risk Chart", layout="wide")
 
-# -----------------------------
-# 스타일
-# -----------------------------
-st.markdown("""
-<style>
-.block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 2rem;
-    max-width: 1400px;
-}
+load_css("common.css", "risk_chart.css")
 
-h1 {
-    margin-bottom: 0.2rem;
-}
-h2, h3 {
-    margin-bottom: 0.4rem;
-}
-
-.small-help {
-    font-size: 0.93rem;
-    color: #6b7280;
-    margin-top: -0.1rem;
-    margin-bottom: 0.9rem;
-}
-
-.hero-box {
-    padding: 18px 20px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #f8fbff 0%, #f3f6fb 100%);
-    border: 1px solid #dbe4f0;
-    margin-bottom: 18px;
-}
-
-.hero-title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    color: #1f2937;
-}
-
-.hero-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-}
-
-.hero-chip {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 14px 16px;
-    min-height: 90px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-
-.hero-chip-title {
-    font-size: 0.88rem;
-    color: #6b7280;
-    font-weight: 700;
-    margin-bottom: 6px;
-}
-
-.hero-chip-value {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #111827;
-    line-height: 1.45;
-}
-
-.summary-box, .rank-box {
-    padding: 18px;
-    border-radius: 16px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    min-height: 170px;
-    height: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.summary-title, .rank-title {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #1f2937;
-    margin-bottom: 10px;
-}
-
-.summary-main, .rank-value {
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: #0f172a;
-    line-height: 1.2;
-    margin-bottom: 10px;
-}
-
-.summary-sub, .rank-sub {
-    font-size: 0.93rem;
-    color: #4b5563;
-    line-height: 1.6;
-}
-
-.analysis-box {
-    padding: 16px 20px;
-    border-radius: 16px;
-    background: #f8fbff;
-    border-left: 6px solid #2563eb;
-    margin-top: 8px;
-    margin-bottom: 18px;
-    font-size: 1rem;
-    line-height: 1.8;
-}
-
-.ellipsis-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.badge-wrap {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 6px;
-}
-
-.badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    color: white;
-}
-
-.badge-danger {
-    background: #dc2626;
-}
-
-.badge-warning {
-    background: #d97706;
-}
-
-.badge-safe {
-    background: #16a34a;
-}
-
-.risk-grade-box {
-    padding: 18px;
-    border-radius: 16px;
-    background: #ffffff;
-    margin-bottom: 16px;
-}
-
-div[data-testid="stSelectbox"] label {
-    font-weight: 700;
-}
-            
-.risk-top-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 10px 0 14px 0;
-}
-
-.risk-top-card {
-    padding: 14px 16px;
-    border-radius: 16px;
-    color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.risk-top-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.risk-top-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.risk-top-safe {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-}
-
-.risk-top-title {
-    font-size: 0.92rem;
-    font-weight: 800;
-    opacity: 0.95;
-    margin-bottom: 6px;
-}
-
-.risk-top-main {
-    font-size: 1.45rem;
-    font-weight: 900;
-    line-height: 1.2;
-    margin-bottom: 6px;
-}
-
-.risk-top-sub {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    opacity: 0.96;
-}
-</style>
-""", unsafe_allow_html=True)
+render_navbar(active="airport")
 
 # -----------------------------
 # 데이터 로드
@@ -244,10 +41,18 @@ years = sorted(df['년도'].dropna().astype(int).unique().tolist())
 # -----------------------------
 # 제목
 # -----------------------------
-st.title("Risk Chart")
 st.markdown(
-    '<div class="small-help">연도별 항공사 지연 리스크와 3단계 고위험 지연을 비교합니다.</div>',
-    unsafe_allow_html=True
+    """
+    <div class="hero-wrap">
+        <div class="hero-badge">PORTFOLIO</div>
+        <h1 class="hero-title">지연 리스크 분석</h1>
+        <p class="hero-desc">
+            연도별 항공사 지연 리스크를 분석하고
+            위험도를 비교합니다.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 # -----------------------------

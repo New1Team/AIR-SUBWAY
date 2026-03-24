@@ -1,24 +1,33 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/home";
-import Maps from "./pages/Maps";
-import Card from "./pages/Card";
-import NotFound from "./pages/NotFound";
+import Home from "@pages/home";
+import Card from "@pages/Card";
+import NavBar from "@components/NavBar";
+import ScrollToTop from "@components/ScrollToTop";
+import NotFound from "@pages/NotFound";
+import "./App.css";
 
 const SubwayPage = () => {
   return (
-    <>
+    <div>
       <Card />
-    </>
+    </div>
   );
 };
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/subway" element={<SubwayPage />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <NavBar />
+      <ScrollToTop />
+
+      <main className="app-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/subway" element={<SubwayPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </>
   );
 }
 
