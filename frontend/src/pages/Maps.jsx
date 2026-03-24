@@ -8,7 +8,7 @@ const Maps = ({ year }) => {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [hoveredMarkerId, setHoveredMarkerId] = useState(null);
-  const [currCategory, setCurrCategory] = useState("주거지");
+  const [currCategory, setCurrCategory] = useState("전체");
 
   const avgData = { home: 0.352, work: 0.285, culture: 0.363 };
 
@@ -105,7 +105,7 @@ const Maps = ({ year }) => {
     <div className="center-section">
       <div className="map-section">
         <div className="map-category-buttons">
-          {["주거지", "산업지", "문화권"].map((cat) => (
+          {["전체", "주거지", "산업지", "문화권"].map((cat) => (
             <button
               key={cat}
               className={`map-category-btn ${currCategory === cat ? "active" : ""}`}

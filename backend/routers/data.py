@@ -265,7 +265,7 @@ def get_map(year: int, category: str = None):
         WHERE `src_year` = {year}
     """
 
-    if category in ["주거지", "산업지", "문화권"]:
+    if category and category != "전체":
         sql += f" AND TRIM(`기본_분류`) = '{category}'"
 
     sql += " ORDER BY `역명`"
