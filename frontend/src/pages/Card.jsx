@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useMemo } from 'react';
 import axios from 'axios';
 import '../assets/Dashboard.css';
 import Maps from './Maps';
@@ -15,10 +15,58 @@ import {
 } from 'recharts';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import '../assets/ScatterLegend.css'; 
+
+const INSIGHTS = {
+  focus: {
+    title: "업무 중심지",
+    description: "강남, 여의도, 시청 같은 전형적인 중심 업무 지구입니다.",
+    
+  },
+  dominantEvening: {
+    title: "퇴근 유입지 / 주거 밀집지",
+    description: `흔히 말하는 '베드타운'보다는, 주거지 근처에서 오후~저녁에 경제 활동을 시작하는 인구가 많은 지역일 수 있습니다.`
+    
+  },
+  dominantMorning: {
+    title: "출근 유입지",
+    description: "이곳은 직장인들이 출근은 하지만, 퇴근 시에는 다른 곳(근처 핫플레이스나 회식 장소)으로 이동하여 지하철을 탈 확률이 높습니다."
+    
+  },
+  normal: {
+    title: "일반 / 저유동",
+    description: "직장인 타겟 마케팅에서는 비용 효율을 위해 우선순위에서 배제해야 할 지역입니다."
+   
+  }
+};
+
+// 3. ScatterLegend 컴포넌트 (Card 바깥으로 이동)
+const ScatterLegend = () => {
+  return (
+    <div className="scatter-info-bar">
+      <div className="info-group">
+        <div className="type-tags">
+          {Object.entries(INSIGHTS).map(([key, info]) => (
+            <div key={key} className="type-tag group">
+              <span className={`dot ${key}`} />
+              <span className="type-name">{info.title}</span>
+              <div className="insight-tooltip">
+                <div className="tooltip-header">{info.title}</div>
+                <p className="tooltip-desc">{info.description}</p>
+                
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload?.length) {
-    const d = payload[0].payload;
+    const item = payload[0].payload;
     return (
       <div
         style={{
@@ -29,12 +77,12 @@ const CustomTooltip = ({ active, payload }) => {
           boxShadow: '0 6px 16px rgba(15, 23, 42, 0.08)',
         }}
       >
-        <p style={{ margin: 0, fontWeight: 800, color: '#111827' }}>{d.name}</p>
+        <p style={{ margin: 0, fontWeight: 800, color: '#111827' }}>{item.name}</p>
         <p style={{ margin: '4px 0 0 0', color: '#475569' }}>
-          출근 하차합: {Number(d.x ?? 0).toLocaleString()}
+          출근 하차합: {Number(item.x ?? 0).toLocaleString()}
         </p>
         <p style={{ margin: '2px 0 0 0', color: '#475569' }}>
-          퇴근 승차합: {Number(d.y ?? 0).toLocaleString()}
+          퇴근 승차합: {Number(item.y ?? 0).toLocaleString()}
         </p>
       </div>
     );
@@ -43,6 +91,8 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const Card = () => {
+  const MAX = 8000000;
+  const MID = MAX / 2; // 4000000 — X, Y축 정중앙
   const [selectedYear, setSelectedYear] = useState(2021);
   const [loading, setLoading] = useState(true);
 
@@ -149,6 +199,11 @@ const Card = () => {
     setHoveredLine(null);
     setHoverStations([]);
   };
+
+ 
+
+
+
 
   return (
     <div className="dashboard-wrapper">
@@ -283,13 +338,13 @@ const Card = () => {
               </div>
 
               <div className="type-tag">
-                <span className="dot dominant" />
+                <span className="dot dominantEvening" />
                 <span className="type-name">우세 지역</span>
                 <span className="val-sub">비중 격차 5~49%</span>
               </div>
 
               <div className="type-tag">
-                <span className="dot mixed" />
+                <span className="dot dominantMorning" />
                 <span className="type-name">복합 지역</span>
                 <span className="val-sub">비중 격차 5%↓</span>
               </div>
@@ -309,89 +364,56 @@ const Card = () => {
               <div className="scatter-chart-box">
                 <ResponsiveContainer width="100%" height={380}>
                   <ScatterChart margin={{ top: 18, right: 24, bottom: 26, left: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="x"
-                      name="출근 하차"
-                      type="number"
-                      domain={['auto', 'auto']}
-                      tickCount={5}
-                      tickFormatter={(v) => Number(v).toLocaleString()}
-                      label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis
-                      dataKey="y"
-                      name="퇴근 승차"
-                      width={86}
-                      tickFormatter={(v) => Number(v).toLocaleString()}
-                      tick={{ fontSize: 12 }}
-                      label={{
-                        value: '승차합',
-                        angle: -90,
-                        position: 'insideLeft',
-                        offset: 14,
-                        style: { textAnchor: 'middle' },
-                      }}
-                    />
+                          <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="x"
+                          name="출근 하차"
+                          type="number"
+                          domain={[0, MAX]}
+                          ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                          tickFormatter={(v) => Number(v).toLocaleString()}
+                          label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis
+                          dataKey="y"
+                          name="퇴근 승차"
+                          domain={[0, MAX]}
+                          ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                          tickFormatter={(v) => Number(v).toLocaleString()}
+                          tick={{ fontSize: 12 }}
+                          label={{
+                            value: '퇴근 승차합',
+                            angle: -90,
+                            position: 'insideLeft',
+                            offset: 14,
+                            style: { textAnchor: 'middle' },
+                          }}
+                        />
 
-                    {/* --- 배경색 영역 추가 (ReferenceArea) --- */}
-                    {/* 1사분면 (우상단): 업무 중심지 - 출근 하차 많음 & 퇴근 승차 많음 */}
-                    <ReferenceArea x1={avg.x} y1={avg.y} fill="#fcc1c1" fillOpacity={0.4} /> 
-                    {/* 2사분면 (좌상단): 퇴근 유입지 - 출근 하차 적음 & 퇴근 승차 많음 */}
-                    <ReferenceArea x2={avg.x} y1={avg.y} fill="#ffe476" fillOpacity={0.4} />
-                    {/* 3사분면 (좌하단): 일반/저유동 - 둘 다 적음 */}
-                    <ReferenceArea x2={avg.x} y2={avg.y} fill="#72b9ff" fillOpacity={0.4} />
-                    {/* 4사분면 (우하단): 출근 유입지 - 출근 하차 많음 & 퇴근 승차 적음 */}
-                    <ReferenceArea x1={avg.x} y2={avg.y} fill="#7bffa9" fillOpacity={0.4} />
-                    {/* -------------------------------------- */}
-                    <ReferenceLine
-                      x={avg.x}
-                      stroke="red"
-                      strokeDasharray="4 4"
-                      label={{ value: '출근평균', position: 'top', fill: '#64748b', fontSize: 12 }}
-                    />
-                    <ReferenceLine
-                      y={avg.y}
-                      stroke="blue"
-                      strokeDasharray="4 4"
-                      label={{ value: '퇴근평균', position: 'right', fill: '#64748b', fontSize: 12 }}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Scatter name="역" data={data} fill="#6366f1" opacity={0.72} />
-                  </ScatterChart>
-                </ResponsiveContainer>
+                        {/* 4등분 배경 — 기준선은 정중앙 4,000,000 */}
+                        {/* 1사분면: 출근↑ 퇴근↑ → 업무 중심지 (빨강) */}
+                        <ReferenceArea x1={MID} x2={MAX} y1={MID} y2={MAX} fill="#fcc1c1" fillOpacity={0.4} />
+                        {/* 2사분면: 출근↓ 퇴근↑ → 퇴근 유입지 (노랑) */}
+                        <ReferenceArea x1={0} x2={MID} y1={MID} y2={MAX} fill="#ffe476" fillOpacity={0.4} />
+                        {/* 3사분면: 출근↓ 퇴근↓ → 일반/저유동 (파랑) */}
+                        <ReferenceArea x1={0} x2={MID} y1={0} y2={MID} fill="#72b9ff" fillOpacity={0.4} />
+                        {/* 4사분면: 출근↑ 퇴근↓ → 출근 유입지 (초록) */}
+                        <ReferenceArea x1={MID} x2={MAX} y1={0} y2={MID} fill="#7bffa9" fillOpacity={0.4} />
+
+                        {/* 중앙 기준선 */}
+                        <ReferenceLine x={MID} stroke="red" strokeDasharray="4 4" label={{ value: '중앙점', position: 'top', fill: '#64748b', fontSize: 12 }} />
+                        <ReferenceLine y={MID} stroke="blue" strokeDasharray="4 4" label={{ value: '중앙점', position: 'right', fill: '#64748b', fontSize: 12 }} />
+
+                        {/* Tooltip, Scatter 각각 한 번만 */}
+                        <Tooltip content={<CustomTooltip />} />
+                        <Scatter name="역" data={data} fill="#6366f1" opacity={0.72} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
               </div>
-
-              <div className="scatter-info-bar">
-                <div className="info-group">
-                  <div className="type-tags">
-                    {/* 1사분면 - 업무 중심지 */}
-                    <div className="type-tag">
-                      <span className="dot focus" />
-                      <span className="type-name">업무 중심지</span>
-                    </div>
-
-                    {/* 2사분면 - 퇴근 유입지 */}
-                    <div className="type-tag">
-                      <span className="dot dominant-evening" />
-                      <span className="type-name">출,퇴근 평균 미만</span>
-                    </div>
-
-                    {/* 4사분면 - 출근 유입지 */}
-                    <div className="type-tag">
-                      <span className="dot dominant-morning" />
-                      <span className="type-name">출근 유입지</span>
-                    </div>
-
-                    {/* 3사분면 - 일반/저유동 */}
-                    <div className="type-tag">
-                      <span className="dot normal" />
-                      <span className="type-name">일반/저유동</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+             
+                          <ScatterLegend />
+              
             </div> {/* weekday-scatter-wrap 끝 */}
           </div> {/* plan-card 끝 */}
         </div> {/* 첫 번째 plan-section 끝 */}
