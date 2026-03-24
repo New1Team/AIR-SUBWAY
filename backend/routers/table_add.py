@@ -1,8 +1,8 @@
 from pyspark.sql import SparkSession, Row
-from sqlalchemy import create_engine, inspect
 from fastapi import APIRouter
 import pandas as pd
-from settings import settings
+from utils.settings import settings
+from utils.config import db_properties, startup, shutdown, get_spark
 import os
 from pydantic import BaseModel
 from typing import List, Dict
@@ -12,8 +12,6 @@ router = APIRouter(
     tags=["spark"]
 )
 
-spark = None
-engine_mariadb = create_engine(settings.mariadb_host)
 # Base Model
 
 # 파일별 컬럼 매핑 모델
@@ -26,37 +24,19 @@ class ColsMapping(BaseModel):
 class FileList(BaseModel):
   file: Dict[str, List[ColsMapping]]
 
-# API 함수
 @router.on_event("startup")
 def startup_event():
-  global spark
-  try:
-    jar_path = settings.jar_path
-    spark = SparkSession.builder \
-      .appName("hayong") \
-      .master(settings.spark_url) \
-      .config("spark.jars", jar_path) \
-      .config("spark.driver.host", settings.host_ip) \
-      .config("spark.driver.bindAddress", "0.0.0.0") \
-      .config("spark.driver.port", "10000") \
-      .config("spark.blockManager.port", "10001") \
-      .config("spark.cores.max", "2") \
-      .config("spark.sql.sources.jdbc.driver.kind", "mariadb") \
-      .config("spark.sql.dialect", "mysql") \
-      .getOrCreate()
-    print("성공!")
-  except Exception as e:
-    print(f"Failed to create Spark session: {e}")
+  startup()
   
 @router.on_event("shutdown")
 def shutdown_event():
-  if spark:
-    spark.stop()
+  shutdown()
 
 # 파일마다 컬럼 정할 수 있게 만들었습니다.
 # 사용방법은 md로 넣어둘게요.
 @router.post('/file_upload')
 def read(fileCon: FileList):
+  spark_session = get_spark()
   current_path = os.path.dirname(os.path.abspath(__file__))
   data_path = os.path.join(current_path, "data")
   # all_files = os.listdir(data_path)
@@ -73,15 +53,9 @@ def read(fileCon: FileList):
   df2 = df[cols].copy()
   df2 = df2.rename(columns=newCols)
   print("df2:  ",df2)
-  sDf = spark.createDataFrame(df2)
+  sDf = spark_session.createDataFrame(df2)
       
   # 테이블 생성 및 적재
-  db_properties = {
-  "user": "root",
-  "password": "1234",
-  "driver": "org.mariadb.jdbc.Driver",
-  "sessionInitStatement": "SET SQL_MODE='ANSI_QUOTES'"
-  }
   try:
     sDf.write.jdbc(
         url=f"{settings.db_url}?useUnicode=true&characterEncoding=UTF-8&sessionVariables=sql_mode='ANSI_QUOTES'",
@@ -94,7 +68,7 @@ def read(fileCon: FileList):
   except Exception as e:
     print(f" 적재실패: {e}")
 
-  check_df = spark.read.jdbc(settings.db_url, table="coordinate", properties=db_properties)
+  check_df = spark_session.read.jdbc(settings.db_url, table="coordinate", properties=db_properties)
   print("개수 ", check_df.count())
   check_df.show()
   return {'message': '적재 성공'}

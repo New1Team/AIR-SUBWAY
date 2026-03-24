@@ -1,5 +1,5 @@
 import mariadb
-from settings import settings
+from utils.settings import settings
 
 conn_params = {
   "user": settings.maria_user,
