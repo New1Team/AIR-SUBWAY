@@ -480,11 +480,3 @@
 }
 
 
-/* 1사분면: 연한 빨강 (#fcc1c1) */
-.dot.focus { background-color: #fcc1c1; border: 1px solid #f87171; }
-/* 2사분면: 연한 노랑 (#ffe476) */
-.dot.dominant-evening { background-color: #ffe476; border: 1px solid #fbbf24; }
-/* 4사분면: 연한 초록 (#7bffa9) */
-.dot.dominant-morning { background-color: #7bffa9; border: 1px solid #34d399; }
-/* 3사분면: 연한 파랑 (#72b9ff) */
-.dot.normal { background-color: #72b9ff; border: 1px solid #60a5fa; }
