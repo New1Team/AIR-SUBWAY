@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  ReferenceArea
 } from 'recharts';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -333,6 +334,17 @@ const Card = () => {
                         style: { textAnchor: 'middle' },
                       }}
                     />
+
+                    {/* --- 배경색 영역 추가 (ReferenceArea) --- */}
+                    {/* 1사분면 (우상단): 업무 중심지 - 출근 하차 많음 & 퇴근 승차 많음 */}
+                    <ReferenceArea x1={avg.x} y1={avg.y} fill="#fcc1c1" fillOpacity={0.4} /> 
+                    {/* 2사분면 (좌상단): 퇴근 유입지 - 출근 하차 적음 & 퇴근 승차 많음 */}
+                    <ReferenceArea x2={avg.x} y1={avg.y} fill="#ffe476" fillOpacity={0.4} />
+                    {/* 3사분면 (좌하단): 일반/저유동 - 둘 다 적음 */}
+                    <ReferenceArea x2={avg.x} y2={avg.y} fill="#72b9ff" fillOpacity={0.4} />
+                    {/* 4사분면 (우하단): 출근 유입지 - 출근 하차 많음 & 퇴근 승차 적음 */}
+                    <ReferenceArea x1={avg.x} y2={avg.y} fill="#7bffa9" fillOpacity={0.4} />
+                    {/* -------------------------------------- */}
                     <ReferenceLine
                       x={avg.x}
                       stroke="red"
@@ -353,24 +365,38 @@ const Card = () => {
 
               <div className="scatter-info-bar">
                 <div className="info-group">
-                  <span className="info-label">여기부분 추가해야 해요 설명을</span>
                   <div className="type-tags">
+                    {/* 1사분면 - 업무 중심지 */}
                     <div className="type-tag">
                       <span className="dot focus" />
-                      <span className="type-name">집중 지역</span>
-                      <span className="val-sub">1위 비중 50%↑</span>
+                      <span className="type-name">업무 중심지</span>
                     </div>
+
+                    {/* 2사분면 - 퇴근 유입지 */}
                     <div className="type-tag">
-                      <span className="dot dominant" />
-                      <span className="type-name">우세 지역</span>
-                      <span className="val-sub">비중 격차 5~49%</span>
+                      <span className="dot dominant-evening" />
+                      <span className="type-name">출,퇴근 평균 미만</span>
+                    </div>
+
+                    {/* 4사분면 - 출근 유입지 */}
+                    <div className="type-tag">
+                      <span className="dot dominant-morning" />
+                      <span className="type-name">출근 유입지</span>
+                    </div>
+
+                    {/* 3사분면 - 일반/저유동 */}
+                    <div className="type-tag">
+                      <span className="dot normal" />
+                      <span className="type-name">일반/저유동</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </div> {/* weekday-scatter-wrap 끝 */}
+          </div> {/* plan-card 끝 */}
+        </div> {/* 첫 번째 plan-section 끝 */}
+                 
+             
 
         <div className="plan-section">
           <div className="plan-card">
@@ -391,7 +417,7 @@ const Card = () => {
                   >
                     <div className="line-rank-header">
                       <span className="line-rank-title">
-                        {item.rn}위 {item.호선}
+                        {item.rn}위 {item.호선}호선
                       </span>
                       <span className="line-rank-value">최고점 {fmt(item.weekend_peak)}</span>
                     </div>
@@ -406,7 +432,7 @@ const Card = () => {
                     {hoveredLine === item.호선 && (
                       <div className="line-hover-box">
                         <div className="line-hover-title">
-                          {selectedYear}년 · {item.호선} 주말 유동 핵심역 TOP5
+                          {selectedYear}년 · {item.호선}호선 주말 유동 핵심역 TOP5
                         </div>
 
                         {hoverLoading ? (
@@ -435,13 +461,13 @@ const Card = () => {
         </div>
       </div>
 
-      <ReactTooltip id="tt-pattern" place="top" className="custom-tooltip">
+      <ReactTooltip id="tt-pattern" place="top" className="custom-tooltip" style={{ zIndex: 9999 }}>
         <div>[주거 지수] (출근 승차 수 + 퇴근 하차 수) / 전체</div>
         <div>[업무 지수] (출근 하차 수 + 퇴근 승차 수) / 전체</div>
         <div>[여가 지수] (평일 오후 하차 수 + 주말 하차 수) / 전체</div>
       </ReactTooltip>
 
-      <ReactTooltip id="tt-norm" place="top" className="custom-tooltip">
+      <ReactTooltip id="tt-norm" place="top" className="custom-tooltip" style={{ zIndex: 9999 }}>
         <div>특정 성격 지수 / (주거+업무+여가 지수 합계)</div>
         <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '4px' }}>
           * 해당 역 정체성의 상대적 지분을 나타냅니다.

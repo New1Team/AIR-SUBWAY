@@ -1,8 +1,7 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -10,7 +9,7 @@ export default defineConfig({
     port: 5173,
     allowedHosts: ['localhost'],
   },
-   resolve: {
+  resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@pages': fileURLToPath(new URL('./src/pages', import.meta.url)),
@@ -18,6 +17,7 @@ export default defineConfig({
       '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
       '@hooks': fileURLToPath(new URL('./src/hooks', import.meta.url)),
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
+      '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
     }
   },
-})
+});

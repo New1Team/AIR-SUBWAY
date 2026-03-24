@@ -33,3 +33,10 @@ pycache/
 
 # data 폴더 제외
 data/
+
+
+
+#자동실행으로 merge 시 충돌 일어날수 있는 부분
+>>>>>>> khy0324
+__pycache__/
+*.pyc
