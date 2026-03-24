@@ -375,7 +375,7 @@ const Card = () => {
                     {/* 2사분면 - 퇴근 유입지 */}
                     <div className="type-tag">
                       <span className="dot dominant-evening" />
-                      <span className="type-name">퇴근 유입지</span>
+                      <span className="type-name">출,퇴근 평균 미만</span>
                     </div>
 
                     {/* 4사분면 - 출근 유입지 */}
@@ -432,7 +432,7 @@ const Card = () => {
                     {hoveredLine === item.호선 && (
                       <div className="line-hover-box">
                         <div className="line-hover-title">
-                          {selectedYear}년 · {item.호선} 주말 유동 핵심역 TOP5
+                          {selectedYear}년 · {item.호선}호선 주말 유동 핵심역 TOP5
                         </div>
 
                         {hoverLoading ? (
@@ -461,13 +461,13 @@ const Card = () => {
         </div>
       </div>
 
-      <ReactTooltip id="tt-pattern" place="top" className="custom-tooltip">
+      <ReactTooltip id="tt-pattern" place="top" className="custom-tooltip" style={{ zIndex: 9999 }}>
         <div>[주거 지수] (출근 승차 수 + 퇴근 하차 수) / 전체</div>
         <div>[업무 지수] (출근 하차 수 + 퇴근 승차 수) / 전체</div>
         <div>[여가 지수] (평일 오후 하차 수 + 주말 하차 수) / 전체</div>
       </ReactTooltip>
 
-      <ReactTooltip id="tt-norm" place="top" className="custom-tooltip">
+      <ReactTooltip id="tt-norm" place="top" className="custom-tooltip" style={{ zIndex: 9999 }}>
         <div>특정 성격 지수 / (주거+업무+여가 지수 합계)</div>
         <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '4px' }}>
           * 해당 역 정체성의 상대적 지분을 나타냅니다.
