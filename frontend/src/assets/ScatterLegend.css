@@ -1,0 +1,75 @@
+/* 1. 부모 요소: 툴팁이 삐져나갈 수 있게 overflow 확인 */
+.scatter-info-bar {
+  overflow: visible !important; 
+}
+
+/* 2. 각 태그 컨테이너 */
+.type-tag {
+  position: relative; /* 툴팁 기준점 */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: cursor;
+  padding: 5px;
+}
+
+/* 3. 툴팁 기본 상태 (숨김) */
+.insight-tooltip {
+  display: none; /* 아예 생성 안 된 것처럼 숨김 */
+  position: absolute;
+  bottom: 35px; /* 태그 위로 띄움 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* 차트보다 위에 오도록 */
+  pointer-events: none; /* 툴팁이 마우스 이벤트를 방해하지 않게 */
+}
+
+/* 4. ⭐ 핵심: 호버 시 나타나게 하는 설정 */
+.type-tag:hover .insight-tooltip {
+  display: block;
+}
+
+/* 툴팁 내부 스타일 */
+.tooltip-header {
+  font-weight: bold;
+  color: #4f46e5;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.tooltip-desc {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* INSIGHTS key명에 맞춘 색상 */
+.dot.focus {
+  background-color: #fca5a5; /* 빨강 - 업무 중심지 */
+}
+
+.dot.dominantEvening {
+  background-color: #fde68a; /* 노랑 - 퇴근 유입지 */
+}
+
+.dot.dominantMorning {
+  background-color: #86efac; /* 초록 - 출근 유입지 */
+}
+
+.dot.normal {
+  background-color: #93c5fd; /* 파랑 - 일반/저유동 */
+}
