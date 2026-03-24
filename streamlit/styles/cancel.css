@@ -1,0 +1,14 @@
+.filter-box {
+  padding: 20px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 12px;
+}
