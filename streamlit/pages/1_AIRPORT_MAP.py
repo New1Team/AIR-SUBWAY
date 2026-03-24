@@ -2,61 +2,30 @@ import streamlit as st
 import pandas as pd
 import pydeck as pdk
 from db import get_data
+from components.navbar import render_navbar
+from components.style_loader import load_css
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="공항 지도",
+    page_icon="🛫",
+    layout="wide",
+)
 
-# -----------------------------
-# 스타일
-# -----------------------------
-st.markdown("""
-<style>
-.block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 2rem;
-    max-width: 1400px;
-}
-.small-help {
-    font-size: 0.95rem;
-    color: #6b7280;
-    margin-bottom: 1rem;
-}
-.metric-card {
-    padding: 18px;
-    border-radius: 16px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    min-height: 145px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.metric-title {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #1f2937;
-    margin-bottom: 8px;
-}
-.metric-value {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: #0f172a;
-    line-height: 1.2;
-}
-.metric-sub {
-    font-size: 0.95rem;
-    color: #4b5563;
-    line-height: 1.6;
-}
-</style>
-""", unsafe_allow_html=True)
+load_css("common.css", "airport_map.css")
+render_navbar(active="airport")
 
-# -----------------------------
-# 제목
-# -----------------------------
-st.title("항공사별 공항 위치 및 분포")
 st.markdown(
-    '<div class="small-help">선택한 항공사의 공항 위치를 지도에서 확인하고, 취항 공항 수를 전체 평균과 비교합니다.</div>',
-    unsafe_allow_html=True
+    """
+    <div class="hero-wrap">
+        <div class="hero-badge">PORTFOLIO</div>
+        <h1 class="hero-title">항공사별 공항 위치 및 분포</h1>
+        <p class="hero-desc">
+            선택한 항공사의 공항 위치를 지도에서 확인하고,
+            취항 공항 수를 전체 평균과 비교합니다.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 # -----------------------------
@@ -99,8 +68,6 @@ if not df.empty:
     # -----------------------------
     # 지도
     # -----------------------------
-    st.header("공항 위치 지도")
-    st.markdown(f"**{selected}** 항공사의 공항 위치입니다.")
 
     map_df = filtered_df[['위도', '경도', '도시']].copy()
     map_df = map_df.dropna(subset=['위도', '경도'])

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import useMapMarkers from "../hooks/useMapMarkers";
-import SubwayMap from "../components/maps/SubwayMap";
-import "../assets/Maps.css";
+import useMapMarkers from "@hooks/useMapMarkers";
+import SubwayMap from "@components/maps/SubwayMap";
+import "@assets/Maps.css";
 
 const Maps = ({ year = 2021 }) => {
   const [map, setMap] = useState(null);
