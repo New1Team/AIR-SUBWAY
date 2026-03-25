@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios'; // axios.isCancel 체크용으로 유지
 import { api } from '../utils/network'; // 공통 axios 인스턴스 사용
 import '../assets/Dashboard.css';
