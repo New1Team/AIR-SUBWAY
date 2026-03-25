@@ -184,24 +184,16 @@ layout: default
 </div>
 
 ## 🏗️ System Architecture
-<br><br>
 
-
-```mermaid
-graph LR
-    A[공공데이터 API] --> B[Pandas ETL]
-    B --> C[(MySQL DB)]
-    C --> D[Streamlit Web]
-    D --> E[Pydeck Map]
-    D --> F[Altair Chart]
-```
----
-layout: default
----
+<div class="flex justify-center">
+  <img src="/air_architecture.png" width="830" />
+</div>
 
 <div class="absolute right-0 text-sm">
   🛫 미항공 데이터 분석
 </div>
+
+---
 
 ## 🚀 Main Features (주요 기능)
 
@@ -313,16 +305,9 @@ layout: default
 
 ## 🏗️ System Architecture
 
-<br><br><br><br><br>
-
-```mermaid
-graph LR
-    A[공공데이터 API/SHP] --> B[PySpark ETL]
-    B --> C[(MariaDB / MySQL)]
-    C --> D[FastAPI Server]
-    D --> E[React Dashboard]
-```
-<br>
+<div class="flex justify-center">
+  <img src="/sub_architecture.png" width="830" />
+</div>
 
 ---
 layout: default
@@ -347,7 +332,13 @@ layout: default
 
 ---
 
-대시보드(실제 ui 캡쳐본)
+<div class="flex justify-center">
+<img src="/map1.png" width="620" />
+</div>
+
+--- 
+
+<img src="/sub_weekday.png" width="850" />
 
 <a href="http://192.168.0.110:8501" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
   서비스 화면 이동
@@ -355,13 +346,10 @@ layout: default
 
 ---
 
-대시보드(실제 ui 캡쳐본)
+<img src="/sub_weekend.png" width="850" />
 
 ---
 
-대시보드(실제 ui 캡쳐본)
-
---- 
 
 ## ⚠️ Troubleshooting
 

@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import data, upload
 from database.spark_session import lifespan
 
+
+
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
@@ -10,7 +12,9 @@ app.add_middleware(
   allow_origins=[
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "http://192.168.0.105:5173",
+      "http://localhost:8501",
+      "http://127.0.0.1:8501",
+      "http://aiedu.tplinkdns.com:6100",
   ],
   allow_credentials=True,
   allow_methods=["*"],
