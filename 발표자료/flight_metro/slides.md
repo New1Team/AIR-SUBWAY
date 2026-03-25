@@ -136,7 +136,7 @@ layout: default
 
 ## WBS
 이미지 캡쳐본  
-<a href="https://docs.google.com/spreadsheets/d/10rcUMPnz9NZdHwDPqJMjMV1odBDm1sutQoFqZBnC7Aw/edit?gid=47234164#gid=47234164" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
+<a href="https://docs.google.com/spreadsheets/d/10rcUMPnz9NZdHwDPqJMjMV1odBDm1sutQoFqZBnC7Aw/edit?gid=406132480#gid=406132480" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
   📊 WBS (Google Spreadsheets) 상세 보기
 </a>
 
@@ -265,7 +265,7 @@ layout: default
 ## WBS
 <!-- <img src="/" width="650" /> -->
  
-<a href="https://docs.google.com/spreadsheets/d/10rcUMPnz9NZdHwDPqJMjMV1odBDm1sutQoFqZBnC7Aw/edit?gid=406132480#gid=406132480" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
+<a href="https://docs.google.com/spreadsheets/d/10rcUMPnz9NZdHwDPqJMjMV1odBDm1sutQoFqZBnC7Aw/edit?gid=365611064#gid=365611064" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
   📊 WBS (Google Spreadsheets) 상세 보기
 </a>
 
@@ -281,7 +281,7 @@ layout: default
 
 <!-- <img src="/" width="650" /> -->
 
-<a href="https://docs.google.com/spreadsheets/d/10rcUMPnz9NZdHwDPqJMjMV1odBDm1sutQoFqZBnC7Aw/edit?gid=47234164#gid=47234164" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
+<a href="https://docs.google.com/spreadsheets/d/10rcUMPnz9NZdHwDPqJMjMV1odBDm1sutQoFqZBnC7Aw/edit?gid=0#gid=0" target="_blank" class="border-b border-green-500 text-green-500 hover:text-green-400 transition">
   📊 기능정의서 (Google Spreadsheets) 상세 보기
 </a>
 
