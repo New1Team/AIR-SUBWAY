@@ -1,76 +1,21 @@
 from pyspark.sql import SparkSession, Row
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 import pandas as pd
 import os
-from pydantic import BaseModel
-from typing import List, Dict
-from sqlalchemy import create_engine, inspect
-from utils.settings import settings
-
-spark = None
-engine_mariadb = create_engine(settings.mariadb_host)
-
-db_properties = {
-  "user": settings.maria_user,
-  "password": settings.maria_password,
-  "driver": "org.mariadb.jdbc.Driver"
-  }
-
-# API 함수
-def startup():
-  global spark
-  try:
-    spark = SparkSession.builder \
-      .appName("1team") \
-      .master(settings.spark_url) \
-      .config("spark.jars", settings.jar_path) \
-      .config("spark.driver.host", settings.host_ip) \
-      .config("spark.driver.bindAddress", "0.0.0.0") \
-      .config("spark.driver.port", "10000") \
-      .config("spark.blockManager.port", "10001") \
-      .config("spark.cores.max", "2") \
-      .config("spark.sql.sources.jdbc.driver.kind", "mariadb") \
-      .config("spark.sql.dialect", "mysql") \
-      .getOrCreate()
-    print("성공!")
-  except Exception as e:
-    print(f"Failed to create Spark session: {e}")
-  return spark
-
-def shutdown():
-  if spark:
-    spark.stop()
-    
+from core.settings import settings
+from core.constants import db_properties
+from database.spark_session import get_spark
+from schemas.spark_schema import FileList
 
 router = APIRouter(
     prefix="/spark",
     tags=["spark"]
 )
 
-# Base Model
-
-# 파일별 컬럼 매핑 모델
-class ColsMapping(BaseModel):
-  # 원본 컬럼명
-  source_col:str
-  # 변경할 컬럼명
-  target_col:str
-# 파일명, 매핑리스트 모델
-class FileList(BaseModel):
-  file: Dict[str, List[ColsMapping]]
-
-@router.on_event("startup")
-def startup_event():
-  startup()
-  
-@router.on_event("shutdown")
-def shutdown_event():
-  shutdown()
-
 # 파일마다 컬럼 정할 수 있게 만들었습니다.
 # 사용방법은 md로 넣어둘게요.
 @router.post('/file_upload')
-def read(fileCon: FileList):
+def read(fileCon: FileList, spark: SparkSession = Depends(get_spark)):
   current_path = os.path.dirname(os.path.abspath(__file__))
   data_path = os.path.join(current_path, "data")
   # all_files = os.listdir(data_path)
