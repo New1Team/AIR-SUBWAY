@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
     spark = SparkSession.builder \
       .appName("mySparkApp") \
       .master(settings.spark_url) \
-      .config("spark.driver.host", settings.host_ip) \
+      .config("spark.driver.host", "backend") \
       .config("spark.driver.bindAddress", "0.0.0.0") \
       .config("spark.driver.port", "10000") \
       .config("spark.blockManager.port", "10001") \
