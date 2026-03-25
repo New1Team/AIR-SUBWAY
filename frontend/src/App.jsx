@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "@pages/home";
 import Card from "@pages/Card";
-import NavBar from "@components/NavBar";
-import ScrollToTop from "@components/ScrollToTop";
+import NavBar from "@components/common/NavBar";
+import ScrollToTop from "@components/common/ScrollToTop";
 import NotFound from "@pages/NotFound";
 import "./App.css";
 

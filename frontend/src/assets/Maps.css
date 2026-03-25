@@ -1,3 +1,6 @@
+/* =========================================================
+   [00] map 전체 컨테이너
+========================================================= */
 .map-section {
   position: relative;
   height: 860px;
@@ -10,36 +13,45 @@
 }
 
 /* 일반 모드에서 Maps 컴포넌트가 바로 꽉 차게 */
-.map-section > .map-root {
+.map-section > .map-root,
+.map-single-view > .map-root,
+.map-compare-map > .map-root,
+.map-compare-map > * {
   width: 100%;
   height: 100%;
 }
 
-/* 비교 버튼 */
+/* =========================================================
+   [01] 단일 지도 영역
+========================================================= */
+.map-single-view {
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* =========================================================
+   [02] 비교 모드 버튼
+========================================================= */
 .map-compare-toggle-btn--floating {
   position: absolute;
   top: 14px;
   right: 14px;
   z-index: 120;
-
   display: inline-flex;
   align-items: center;
   gap: 6px;
-
   padding: 8px 12px;
-
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(6px);
-
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
-
   font-size: 13px;
   font-weight: 700;
   color: #1f2937;
-
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -53,43 +65,9 @@
   transform: scale(0.97);
 }
 
-/* 비교 모드 */
-.map-compare-layout {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0; /* 딱 반으로 */
-}
-
-.map-compare-panel {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.map-compare-panel-title {
-  padding: 14px 16px 8px;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.map-compare-map,
-.map-compare-image-wrap {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* 지도는 꽉 채우기 */
-.map-compare-map > .map-root {
-  width: 100%;
-  height: 100%;
-}
-
-/* 비교 모드: 정확히 2등분 */
+/* =========================================================
+   [03] 비교 모드 2열 레이아웃
+========================================================= */
 .map-compare-layout {
   width: 100%;
   height: 100%;
@@ -97,6 +75,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   align-items: stretch;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .map-compare-panel {
@@ -109,13 +89,16 @@
 .map-compare-panel-title {
   flex: 0 0 auto;
   margin: 0 0 10px 0;
+  padding: 14px 16px 0;
   font-size: 15px;
   font-weight: 800;
   color: #1e293b;
   line-height: 1.2;
 }
 
-/* 지도/이미지 박스 크기 일치 */
+/* =========================================================
+   [04] 좌우 패널 공통 박스
+========================================================= */
 .map-compare-map,
 .map-compare-image-wrap {
   flex: 1 1 auto;
@@ -127,62 +110,27 @@
   box-sizing: border-box;
 }
 
-/* 지도는 박스 꽉 채우기 */
+/* 지도 영역 */
 .map-compare-map {
   position: relative;
+  display: block;
 }
 
-.map-compare-map > * {
-  width: 100%;
-  height: 100%;
-}
-
-/* 이미지도 박스 꽉 채우기 */
+/* =========================================================
+   [05] 비교 이미지 바깥 래퍼
+   - 이전엔 grid/center와 evidence 쪽 레이아웃이 섞여 있었음
+   - 지금은 overlay 내부 레이아웃이 담당하도록 단순화
+========================================================= */
 .map-compare-image-wrap {
   position: relative;
+  display: block;
   padding: 0;
-  display: block;
+  background: #f3f4f6;
 }
 
-/* react-quick-pinch-zoom wrapper */
-.map-compare-image-zoom-shell {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-  touch-action: none;
-  cursor: grab;
-  background: #f8fafc;
-}
-
-.map-compare-image-zoom-shell:active {
-  cursor: grabbing;
-}
-
-.map-compare-image-zoom-shell > div {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 이미지 확대/이동용 */
-.map-compare-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  display: block;
-  user-select: none;
-  transform-origin: 0 0;
-  will-change: transform;
-  pointer-events: none;
-}
-
-/* 지도 내부 카테고리 버튼 */
+/* =========================================================
+   [06] 지도 카테고리 버튼
+========================================================= */
 .map-category-buttons {
   position: absolute;
   top: 18px;
@@ -215,7 +163,9 @@
   border-color: #2563eb;
 }
 
-/* 마커 크기 축소 */
+/* =========================================================
+   [07] 마커 스타일
+========================================================= */
 .map-marker-wrap {
   width: 14px;
   height: 14px;
@@ -226,8 +176,8 @@
 }
 
 .map-marker-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 1px solid #ffffff;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 1px 3px rgba(0, 0, 0, 0.14);
@@ -258,7 +208,9 @@
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-/* hover */
+/* =========================================================
+   [08] 지도 hover 카드
+========================================================= */
 .map-hover-box {
   width: 252px;
   background: #ffffff;
@@ -388,6 +340,9 @@
   background: #adb5bd;
 }
 
+/* =========================================================
+   [09] 로딩 오버레이
+========================================================= */
 .loading-overlay {
   position: absolute;
   inset: 0;
@@ -402,6 +357,149 @@
   backdrop-filter: blur(1px);
 }
 
+/* =========================================================
+   [10] MapEvidenceOverlay 전체 레이아웃
+   - 이 부분이 없어서 오른쪽 패널 내부가 기본 흐름대로 깨졌음
+========================================================= */
+.map-evidence-overlay {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.map-evidence-header {
+  flex: 0 0 auto;
+  padding: 12px 14px 8px;
+}
+
+.map-evidence-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.map-evidence-compare-labels {
+  display: none;
+}
+
+.map-evidence-caption {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 14px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #475569;
+}
+
+/* =========================================================
+   [11] 실제 이미지 보여지는 영역
+   - flex 1로 남은 높이 전부 사용
+========================================================= */
+.map-evidence-image-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  background: #f8fafc;
+  display: block;
+}
+
+/* =========================================================
+   [12] 줌/드래그 동작 영역
+   - 여기서만 중앙 정렬
+========================================================= */
+.map-evidence-image-zoom-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  overscroll-behavior: contain;
+  cursor: grab;
+}
+
+.map-evidence-image-zoom-shell:active {
+  cursor: grabbing;
+}
+
+/* =========================================================
+   [13] 실제 이미지
+   - absolute/top/left 안 씀
+   - transform은 JS가 이동/확대만 담당
+========================================================= */
+.map-evidence-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 88%;
+  max-height: 88%;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* =========================================================
+   [14] 안내문 / 리셋 버튼
+   - 이미지 위에 고정 배치
+========================================================= */
+.map-evidence-helper {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 3;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.map-evidence-reset-btn {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================================
+   [15] 남겨둘 버튼 공통
+========================================================= */
+.map-evidence-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-evidence-close-btn,
+.map-evidence-toggle-btn {
+  cursor: pointer;
+}
+
+/* =========================================================
+   [16] 반응형
+========================================================= */
 @media (max-width: 1200px) {
   .map-section {
     height: 760px;
@@ -422,6 +520,22 @@
   .map-compare-map,
   .map-compare-image-wrap {
     height: 420px;
+  }
+
+  .map-evidence-image-wrap,
+  .map-evidence-image-zoom-shell {
+    min-height: 360px;
+  }
+
+  .map-evidence-helper {
+    left: 10px;
+    bottom: 10px;
+    font-size: 11px;
+  }
+
+  .map-evidence-reset-btn {
+    right: 10px;
+    bottom: 10px;
   }
 }
 

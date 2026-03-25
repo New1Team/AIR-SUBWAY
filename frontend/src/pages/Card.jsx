@@ -1,61 +1,40 @@
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import QuickPinchZoom, { make3dTransformValue } from 'react-quick-pinch-zoom';
-import { api } from '../utils/network';
-import '../assets/Dashboard.css';
-import '../assets/Maps.css';
-import Maps from './Maps';
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { api } from "@utils/network";
 
-import KpiSection from '../components/dashboard/kpi-section';
-import InfoBar from '../components/dashboard/info-bar';
-import DashboardTooltip from '../components/dashboard/tooltip';
-import ScatterSection from '../components/dashboard/scatter-section';
-import WeekendLineSection from '../components/dashboard/weekend-line-section';
+import "@assets/Dashboard.css";
+import "@assets/Maps.css";
 
-import LoadingOverlay from '../components/loading-overlay';
-import seoulZoningReference from '../assets/seoul-zoning-reference.png';
+import Maps from "@pages/Maps";
 
-const ZoomableReferenceImage = ({ src, alt }) => {
-  const imgRef = useRef(null);
+import InfoBar from "@components/maps/info-bar";
+import MapEvidenceOverlay from "@components/maps/map-evidence-overlay";
 
-  const onUpdate = ({ x, y, scale }) => {
-    if (!imgRef.current) return;
-    imgRef.current.style.transform = make3dTransformValue({ x, y, scale });
-  };
+import KpiSection from "@components/dashboard/kpi/kpi-section";
+import DashboardTooltip from "@components/dashboard/tooltip/tooltip";
+import ScatterSection from "@components/dashboard/scatter/scatter-section";
+import WeekendLineSection from "@components/dashboard/weekend/weekend-line-section";
 
-  return (
-    <div className="map-compare-image-zoom-shell">
-      <QuickPinchZoom
-        onUpdate={onUpdate}
-        minZoom={1}
-        maxZoom={5}
-        inertia
-        wheelScaleFactor={220}
-        tapZoomFactor={2}
-        doubleTapToggleZoom
-        draggableUnzoomed={false}
-      >
-        <img
-          ref={imgRef}
-          src={src}
-          alt={alt}
-          className="map-compare-image"
-          draggable={false}
-        />
-      </QuickPinchZoom>
-    </div>
-  );
-};
+import LoadingOverlay from "@components/common/loading-overlay";
+
+import seoulZoningReference from "@assets/images/seoul-zoning-reference.png";
 
 const Card = () => {
   const MAX = 8000000;
   const MID = MAX / 2;
 
   const [selectedYear, setSelectedYear] = useState(2021);
+
+  /* =========================================================
+     전체 페이지 로딩
+  ========================================================= */
   const [mainLoading, setMainLoading] = useState(true);
   const [weekendLoading, setWeekendLoading] = useState(true);
   const loading = mainLoading || weekendLoading;
 
+  /* =========================================================
+     비교 모드 on/off
+  ========================================================= */
   const [compareMode, setCompareMode] = useState(false);
 
   const [data, setData] = useState([]);
@@ -88,16 +67,19 @@ const Card = () => {
 
   const fmt = (n) => Number(n ?? 0).toLocaleString();
 
+  /* =========================================================
+     KPI + 산점도 데이터
+  ========================================================= */
   useEffect(() => {
     const fetchData = async () => {
       setMainLoading(true);
 
       try {
         const [kpiRes, scatterRes] = await Promise.all([
-          api.get('/data/kpi', {
+          api.get("/data/kpi", {
             params: { year: selectedYear },
           }),
-          api.get('/data/scatter', {
+          api.get("/data/scatter", {
             params: { year: selectedYear },
           }),
         ]);
@@ -105,6 +87,7 @@ const Card = () => {
         setKpiData(kpiRes.data);
 
         const rows = scatterRes.data?.data || [];
+
         setData(
           rows.map((r) => ({
             x: r.x_value,
@@ -122,7 +105,7 @@ const Card = () => {
           setAvg({ x: 0, y: 0 });
         }
       } catch (error) {
-        console.error('데이터 로드 실패:', error);
+        console.error("데이터 로드 실패:", error);
         setData([]);
         setAvg({ x: 0, y: 0 });
       } finally {
@@ -133,18 +116,21 @@ const Card = () => {
     fetchData();
   }, [selectedYear]);
 
+  /* =========================================================
+     주말 노선 데이터
+  ========================================================= */
   useEffect(() => {
     const fetchWeekendLines = async () => {
       setWeekendLoading(true);
 
       try {
-        const res = await api.get('/data/weekend-lines', {
+        const res = await api.get("/data/weekend-lines", {
           params: { year: selectedYear },
         });
 
         setWeekendLines(res.data?.items || []);
       } catch (error) {
-        console.error('주말 노선 데이터 로드 실패:', error);
+        console.error("주말 노선 데이터 로드 실패:", error);
         setWeekendLines([]);
       } finally {
         setWeekendLoading(false);
@@ -154,6 +140,9 @@ const Card = () => {
     fetchWeekendLines();
   }, [selectedYear]);
 
+  /* =========================================================
+     연도 변경 시 hover 캐시 초기화
+  ========================================================= */
   useEffect(() => {
     setHoveredLine(null);
     setHoverStations([]);
@@ -162,6 +151,9 @@ const Card = () => {
     setLineStationsCache({});
   }, [selectedYear]);
 
+  /* =========================================================
+     주말 노선 hover
+  ========================================================= */
   const handleLineHover = async (line) => {
     setHoveredLine(line);
 
@@ -171,13 +163,15 @@ const Card = () => {
       return;
     }
 
-    if (loadingLine === line) return;
+    if (loadingLine === line) {
+      return;
+    }
 
     try {
       setLoadingLine(line);
       setHoverLoading(true);
 
-      const res = await api.get('/data/weekend-line-stations', {
+      const res = await api.get("/data/weekend-line-stations", {
         params: {
           year: selectedYear,
           line,
@@ -185,6 +179,7 @@ const Card = () => {
       });
 
       const items = res.data?.items || [];
+
       setHoverStations(items);
 
       setLineStationsCache((prev) => ({
@@ -193,7 +188,8 @@ const Card = () => {
       }));
     } catch (error) {
       if (axios.isCancel?.(error)) return;
-      console.error('호선별 역 순위 데이터 로드 실패:', error);
+
+      console.error("호선별 역 순위 데이터 로드 실패:", error);
       setHoverStations([]);
     } finally {
       setLoadingLine(null);
@@ -227,17 +223,22 @@ const Card = () => {
 
       <KpiSection kpiData={kpiData} fmt={fmt} />
 
-      <div className={`box map-section ${compareMode ? 'compare-mode' : ''}`}>
+      {/* =====================================================
+         지도 / 비교 모드 영역
+      ====================================================== */}
+      <div className={`box map-section ${compareMode ? "compare-mode" : ""}`}>
         <button
           type="button"
           className="map-compare-toggle-btn map-compare-toggle-btn--floating"
           onClick={() => setCompareMode((prev) => !prev)}
         >
-          {compareMode ? '비교 모드 끄기' : '근거 이미지 비교'}
+          {compareMode ? "비교 모드 끄기" : "근거 이미지 비교"}
         </button>
 
         {!compareMode ? (
-          <Maps year={selectedYear} compareMode={false} />
+          <div className="map-single-view">
+            <Maps year={selectedYear} compareMode={false} />
+          </div>
         ) : (
           <div className="map-compare-layout">
             <div className="map-compare-panel">
@@ -250,9 +251,9 @@ const Card = () => {
             <div className="map-compare-panel">
               <div className="map-compare-panel-title">참고 이미지</div>
               <div className="map-compare-image-wrap">
-                <ZoomableReferenceImage
-                  src={seoulZoningReference}
-                  alt="서울 지역별 주거지 참고 이미지"
+                <MapEvidenceOverlay
+                  imageSrc={seoulZoningReference}
+                  imageAlt="서울 지역별 업무지구와 주거지구 참고 이미지"
                 />
               </div>
             </div>
