@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { api } from '../utils/network';
 import '../assets/Dashboard.css';
 import Maps from './Maps';
 import {
@@ -11,11 +12,15 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-  ReferenceArea
+  ReferenceArea,
 } from 'recharts';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 
+/* =========================================================
+   1) 산점도 커스텀 툴팁
+   - 점 위에 마우스를 올렸을 때 역명 / 수치를 보여주는 UI
+========================================================= */
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload?.length) {
     const d = payload[0].payload;
@@ -43,12 +48,20 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const Card = () => {
+  /* =========================================================
+     2) 기본 상태값
+     - 선택 연도, 로딩 여부, 산점도 데이터, 평균선 데이터
+  ========================================================= */
   const [selectedYear, setSelectedYear] = useState(2021);
   const [loading, setLoading] = useState(true);
 
   const [data, setData] = useState([]);
   const [avg, setAvg] = useState({ x: 0, y: 0 });
 
+  /* =========================================================
+     3) KPI 카드 데이터 상태
+     - 출근/퇴근/주말 최대 승하차 카드용
+  ========================================================= */
   const [kpiData, setKpiData] = useState({
     commute: {
       boarding: null,
@@ -66,25 +79,64 @@ const Card = () => {
     },
   });
 
+  /* =========================================================
+     4) 주말 노선 rank + hover 관련 상태
+     - weekendLines : 주말 상위 3개 노선
+     - hoveredLine : 현재 hover 중인 호선
+     - hoverStations : hover 박스에 보여줄 역 TOP5
+     - hoverLoading : hover 데이터 로딩 상태
+  ========================================================= */
   const [weekendLines, setWeekendLines] = useState([]);
   const [hoveredLine, setHoveredLine] = useState(null);
   const [hoverStations, setHoverStations] = useState([]);
   const [hoverLoading, setHoverLoading] = useState(false);
 
+  /* =========================================================
+     5) 추가 최적화용 상태
+     - lineStationsCache : 이미 불러온 호선별 역 데이터 캐시
+     - loadingLine      : 현재 요청 중인 호선명
+     
+     [추가한 이유]
+     1. 같은 호선 hover 시 매번 API 재호출 방지
+     2. 요청 중 또 hover 들어와도 중복 호출 방지
+  ========================================================= */
+  const [lineStationsCache, setLineStationsCache] = useState({});
+  const [loadingLine, setLoadingLine] = useState(null);
+
+  /* =========================================================
+     6) 숫자 포맷 함수
+     - null/undefined 안전 처리 후 콤마 표시
+  ========================================================= */
   const fmt = (n) => Number(n ?? 0).toLocaleString();
 
+  /* =========================================================
+     7) KPI + 산점도 데이터 조회
+     - selectedYear 바뀔 때마다 재조회
+     - 기존 axios 직접 호출 대신 api 인스턴스 사용
+     
+     [변경 이유]
+     - baseURL 공통 관리
+     - withCredentials 공통 적용
+     - 코드 중복 감소
+  ========================================================= */
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+
       try {
         const [kpiRes, scatterRes] = await Promise.all([
-          axios.get(`http://localhost:8000/data/kpi?year=${selectedYear}`),
-          axios.get(`http://localhost:8000/data/scatter?year=${selectedYear}`),
+          api.get('/data/kpi', {
+            params: { year: selectedYear },
+          }),
+          api.get('/data/scatter', {
+            params: { year: selectedYear },
+          }),
         ]);
 
         setKpiData(kpiRes.data);
 
         const rows = scatterRes.data?.data || [];
+
         setData(
           rows.map((r) => ({
             x: r.x_value,
@@ -113,10 +165,16 @@ const Card = () => {
     fetchData();
   }, [selectedYear]);
 
+  /* =========================================================
+     8) 주말 상위 노선 조회
+     - selectedYear 바뀔 때마다 재조회
+  ========================================================= */
   useEffect(() => {
     const fetchWeekendLines = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/data/weekend-lines?year=${selectedYear}`);
+        const res = await api.get('/data/weekend-lines', {
+          params: { year: selectedYear },
+        });
         setWeekendLines(res.data?.items || []);
       } catch (error) {
         console.error('주말 노선 데이터 로드 실패:', error);
@@ -127,31 +185,95 @@ const Card = () => {
     fetchWeekendLines();
   }, [selectedYear]);
 
+  /* =========================================================
+     9) 연도 변경 시 hover 관련 상태 초기화
+     
+     [추가한 이유]
+     - 2021년에서 불러온 2호선 데이터가
+       2020년으로 바꿨을 때 그대로 남으면 안 됨
+     - 연도별 데이터가 다르므로 캐시를 비워야 함
+  ========================================================= */
+  useEffect(() => {
+    setHoveredLine(null);
+    setHoverStations([]);
+    setHoverLoading(false);
+    setLoadingLine(null);
+    setLineStationsCache({});
+  }, [selectedYear]);
+
+  /* =========================================================
+     10) 호선 hover 시 역 TOP5 조회
+     
+     [핵심 최적화]
+     1. 이미 캐시에 있으면 API 호출 안 함
+     2. 현재 같은 호선 요청 중이면 API 호출 안 함
+     3. hover UI는 유지
+  ========================================================= */
   const handleLineHover = async (line) => {
+    // 현재 hover 중인 호선 표시
+    setHoveredLine(line);
+
+    // 1) 이미 불러온 적 있는 호선이면 캐시 사용
+    if (lineStationsCache[line]) {
+      setHoverStations(lineStationsCache[line]);
+      setHoverLoading(false);
+      return;
+    }
+
+    // 2) 현재 같은 호선을 요청 중이면 중복 요청 방지
+    if (loadingLine === line) {
+      return;
+    }
+
     try {
-      setHoveredLine(line);
+      setLoadingLine(line);
       setHoverLoading(true);
 
-      const res = await axios.get(
-        `http://localhost:8000/data/weekend-line-stations?year=${selectedYear}&line=${encodeURIComponent(line)}`
-      );
+      const res = await api.get('/data/weekend-line-stations', {
+        params: {
+          year: selectedYear,
+          line: line,
+        },
+      });
 
-      setHoverStations(res.data?.items || []);
+      const items = res.data?.items || [];
+
+      // hover 박스에 표시할 데이터 반영
+      setHoverStations(items);
+
+      // 3) 다음 hover 때 재호출하지 않도록 캐시에 저장
+      setLineStationsCache((prev) => ({
+        ...prev,
+        [line]: items,
+      }));
     } catch (error) {
+      // axios 취소 에러는 그냥 무시 가능
+      if (axios.isCancel?.(error)) return;
+
       console.error('호선별 역 순위 데이터 로드 실패:', error);
       setHoverStations([]);
     } finally {
+      setLoadingLine(null);
       setHoverLoading(false);
     }
   };
 
+  /* =========================================================
+     11) hover 해제
+     - 마우스가 벗어나면 박스 닫기
+     - 캐시는 유지해서 다음 hover 때 재사용
+  ========================================================= */
   const handleLineLeave = () => {
     setHoveredLine(null);
     setHoverStations([]);
+    setHoverLoading(false);
   };
 
   return (
     <div className="dashboard-wrapper">
+      {/* =====================================================
+         12) 연도 선택 드롭다운
+      ====================================================== */}
       <div className="center-section">
         <select
           className="dropdown"
@@ -166,6 +288,9 @@ const Card = () => {
         </select>
       </div>
 
+      {/* =====================================================
+         13) 상단 KPI 카드 3개
+      ====================================================== */}
       <div className="kpi-grid-3">
         <div className="box kpi-card">
           <span className="kpi-title">출근시간 최대 승하차</span>
@@ -257,12 +382,20 @@ const Card = () => {
         </div>
       </div>
 
+      {/* =====================================================
+         14) 지도 영역
+         - 선택 연도를 Maps 컴포넌트로 전달
+         - loading 중일 때 overlay 표시
+      ====================================================== */}
       <div className="box map-section">
         <Maps year={selectedYear}>
           {loading && <div className="loading-overlay">데이터 분석 중...</div>}
         </Maps>
       </div>
 
+      {/* =====================================================
+         15) 지도 아래 분석 지표 설명 바
+      ====================================================== */}
       <div className="map-info-wrap">
         <div className="analytics-info-bar">
           <div className="info-group">
@@ -298,7 +431,15 @@ const Card = () => {
         </div>
       </div>
 
+      {/* =====================================================
+         16) 광고 전략 영역
+         - 평일 직장인 타겟 산점도
+         - 주말 여가/쇼핑 타겟 호선 rank
+      ====================================================== */}
       <div className="box ad-plan-container">
+        {/* -----------------------------------------------------
+           16-1) 평일 직장인 타겟 광고
+        ------------------------------------------------------ */}
         <div className="plan-section">
           <div className="plan-card">
             <h4>(평일) 직장인 타겟 광고</h4>
@@ -310,6 +451,7 @@ const Card = () => {
                 <ResponsiveContainer width="100%" height={380}>
                   <ScatterChart margin={{ top: 18, right: 24, bottom: 26, left: 8 }}>
                     <CartesianGrid strokeDasharray="3 3" />
+
                     <XAxis
                       dataKey="x"
                       name="출근 하차"
@@ -320,6 +462,7 @@ const Card = () => {
                       label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
                       tick={{ fontSize: 12 }}
                     />
+
                     <YAxis
                       dataKey="y"
                       name="퇴근 승차"
@@ -335,16 +478,13 @@ const Card = () => {
                       }}
                     />
 
-                    {/* --- 배경색 영역 추가 (ReferenceArea) --- */}
-                    {/* 1사분면 (우상단): 업무 중심지 - 출근 하차 많음 & 퇴근 승차 많음 */}
-                    <ReferenceArea x1={avg.x} y1={avg.y} fill="#fcc1c1" fillOpacity={0.4} /> 
-                    {/* 2사분면 (좌상단): 퇴근 유입지 - 출근 하차 적음 & 퇴근 승차 많음 */}
+                    {/* 배경 영역 색 */}
+                    <ReferenceArea x1={avg.x} y1={avg.y} fill="#fcc1c1" fillOpacity={0.4} />
                     <ReferenceArea x2={avg.x} y1={avg.y} fill="#ffe476" fillOpacity={0.4} />
-                    {/* 3사분면 (좌하단): 일반/저유동 - 둘 다 적음 */}
                     <ReferenceArea x2={avg.x} y2={avg.y} fill="#72b9ff" fillOpacity={0.4} />
-                    {/* 4사분면 (우하단): 출근 유입지 - 출근 하차 많음 & 퇴근 승차 적음 */}
                     <ReferenceArea x1={avg.x} y2={avg.y} fill="#7bffa9" fillOpacity={0.4} />
-                    {/* -------------------------------------- */}
+
+                    {/* 평균 기준선 */}
                     <ReferenceLine
                       x={avg.x}
                       stroke="red"
@@ -357,6 +497,7 @@ const Card = () => {
                       strokeDasharray="4 4"
                       label={{ value: '퇴근평균', position: 'right', fill: '#64748b', fontSize: 12 }}
                     />
+
                     <Tooltip content={<CustomTooltip />} />
                     <Scatter name="역" data={data} fill="#6366f1" opacity={0.72} />
                   </ScatterChart>
@@ -366,25 +507,21 @@ const Card = () => {
               <div className="scatter-info-bar">
                 <div className="info-group">
                   <div className="type-tags">
-                    {/* 1사분면 - 업무 중심지 */}
                     <div className="type-tag">
                       <span className="dot focus" />
                       <span className="type-name">업무 중심지</span>
                     </div>
 
-                    {/* 2사분면 - 퇴근 유입지 */}
                     <div className="type-tag">
                       <span className="dot dominant-evening" />
                       <span className="type-name">출,퇴근 평균 미만</span>
                     </div>
 
-                    {/* 4사분면 - 출근 유입지 */}
                     <div className="type-tag">
                       <span className="dot dominant-morning" />
                       <span className="type-name">출근 유입지</span>
                     </div>
 
-                    {/* 3사분면 - 일반/저유동 */}
                     <div className="type-tag">
                       <span className="dot normal" />
                       <span className="type-name">일반/저유동</span>
@@ -392,12 +529,15 @@ const Card = () => {
                   </div>
                 </div>
               </div>
-            </div> {/* weekday-scatter-wrap 끝 */}
-          </div> {/* plan-card 끝 */}
-        </div> {/* 첫 번째 plan-section 끝 */}
-                 
-             
+            </div>
+          </div>
+        </div>
 
+        {/* -----------------------------------------------------
+           16-2) 주말 여가/쇼핑 타겟 광고
+           - hover 구조 유지
+           - 단, 같은 호선은 캐시 사용
+        ------------------------------------------------------ */}
         <div className="plan-section">
           <div className="plan-card">
             <h4>(주말) 여가/쇼핑 타겟 광고</h4>
@@ -419,7 +559,7 @@ const Card = () => {
                       <span className="line-rank-title">
                         {item.rn}위 {item.호선}호선
                       </span>
-                      <span className="line-rank-value">최고점 {fmt(item.weekend_peak)}</span>
+                      <span className="line-rank-value"> {fmt(item.weekend_peak)}</span>
                     </div>
 
                     <div className="line-rank-bar-wrap">
@@ -461,6 +601,9 @@ const Card = () => {
         </div>
       </div>
 
+      {/* =====================================================
+         17) 하단 설명 툴팁
+      ====================================================== */}
       <ReactTooltip id="tt-pattern" place="top" className="custom-tooltip" style={{ zIndex: 9999 }}>
         <div>[주거 지수] (출근 승차 수 + 퇴근 하차 수) / 전체</div>
         <div>[업무 지수] (출근 하차 수 + 퇴근 승차 수) / 전체</div>

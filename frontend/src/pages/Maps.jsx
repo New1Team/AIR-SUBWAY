@@ -11,6 +11,17 @@ const Maps = ({ year = 2021 }) => {
   const markers = useMapMarkers(year, currCategory);
 
   const center = { lat: 37.5547, lng: 126.9707 };
+  
+  const getAnchor = (markerLat) => {
+    if (!map) return 1.2;
+
+    const bounds = map.getBounds();
+    const ne = bounds.getNorthEast().getLat();
+    const sw = bounds.getSouthWest().getLat();
+    const threshold = ne - (ne - sw) * 0.5;
+
+    return markerLat > threshold ? -0.1 : 1.2;
+  };
 
   const avgData = useMemo(() => {
     if (!markers.length) {

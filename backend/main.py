@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
   spark = None
   try:
     spark = SparkSession.builder \
-      .appName("mySparkApp") \
+      .appName("mySparktest") \
       .master(settings.spark_url) \
       .config("spark.driver.host", settings.host_ip) \
       .config("spark.driver.bindAddress", "0.0.0.0") \
