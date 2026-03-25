@@ -1,39 +1,192 @@
-.center-section {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-
-/* 지도 */
 .map-section {
   position: relative;
+  height: 860px;
   padding: 0 !important;
-  height: 520px;
   overflow: hidden;
   border-radius: 18px;
   border: 1px solid #e9ecef;
   background: #ffffff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
 }
 
-.loading-overlay {
+/* 일반 모드에서 Maps 컴포넌트가 바로 꽉 차게 */
+.map-section > .map-root {
+  width: 100%;
+  height: 100%;
+}
+
+/* 비교 버튼 */
+.map-compare-toggle-btn--floating {
   position: absolute;
-  inset: 0;
-  z-index: 50;
-  display: flex;
+  top: 14px;
+  right: 14px;
+  z-index: 120;
+
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  color: #334155;
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(1px);
+  gap: 6px;
+
+  padding: 8px 12px;
+
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f2937;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
+.map-compare-toggle-btn--floating:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.map-compare-toggle-btn--floating:active {
+  transform: scale(0.97);
+}
+
+/* 비교 모드 */
+.map-compare-layout {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0; /* 딱 반으로 */
+}
+
+.map-compare-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.map-compare-panel-title {
+  padding: 14px 16px 8px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.map-compare-map,
+.map-compare-image-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 지도는 꽉 채우기 */
+.map-compare-map > .map-root {
+  width: 100%;
+  height: 100%;
+}
+
+/* 비교 모드: 정확히 2등분 */
+.map-compare-layout {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.map-compare-panel {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-compare-panel-title {
+  flex: 0 0 auto;
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+/* 지도/이미지 박스 크기 일치 */
+.map-compare-map,
+.map-compare-image-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+
+/* 지도는 박스 꽉 채우기 */
+.map-compare-map {
+  position: relative;
+}
+
+.map-compare-map > * {
+  width: 100%;
+  height: 100%;
+}
+
+/* 이미지도 박스 꽉 채우기 */
+.map-compare-image-wrap {
+  position: relative;
+  padding: 0;
+  display: block;
+}
+
+/* react-quick-pinch-zoom wrapper */
+.map-compare-image-zoom-shell {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+  background: #f8fafc;
+}
+
+.map-compare-image-zoom-shell:active {
+  cursor: grabbing;
+}
+
+.map-compare-image-zoom-shell > div {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 이미지 확대/이동용 */
+.map-compare-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  display: block;
+  user-select: none;
+  transform-origin: 0 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* 지도 내부 카테고리 버튼 */
 .map-category-buttons {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 18px;
+  left: 18px;
   display: flex;
   gap: 8px;
   z-index: 100;
@@ -62,9 +215,10 @@
   border-color: #2563eb;
 }
 
+/* 마커 크기 축소 */
 .map-marker-wrap {
-  width: 24px;
-  height: 24px;
+  width: 14px;
+  height: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,11 +226,11 @@
 }
 
 .map-marker-dot {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.45), 0 4px 8px rgba(0, 0, 0, 0.22);
+  border: 1px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 1px 3px rgba(0, 0, 0, 0.14);
 }
 
 .map-marker-dot.focus {
@@ -91,7 +245,20 @@
   background-color: #ffcc00;
 }
 
-/* 지도 hover */
+/* 비교 모드에서는 더 작게 */
+.compare-mode .map-marker-wrap {
+  width: 12px;
+  height: 12px;
+}
+
+.compare-mode .map-marker-dot {
+  width: 9px;
+  height: 9px;
+  border: 1px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* hover */
 .map-hover-box {
   width: 252px;
   background: #ffffff;
@@ -221,104 +388,55 @@
   background: #adb5bd;
 }
 
-/* 지도 아래 설명 바 */
-.map-info-wrap {
-  width: 100%;
-  margin-top: -8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.analytics-info-bar {
-  width: 100%;
-  max-width: 1120px;
-  min-height: 64px;
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  flex-wrap: wrap;
-  text-align: center;
-  background-color: #fcfdfe;
-  border: 1px solid #dee2e6;
-  padding: 14px 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-  box-sizing: border-box;
-}
-
-.info-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 0;
-  flex-wrap: wrap;
-  text-align: center;
-}
-
-.info-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.info-content {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.5;
+  font-weight: 800;
+  font-size: 1rem;
   color: #334155;
-  white-space: normal;
-  text-align: center;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(1px);
 }
 
-.type-tags {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  white-space: normal;
+@media (max-width: 1200px) {
+  .map-section {
+    height: 760px;
+  }
 }
 
-.type-tag {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  text-align: center;
+@media (max-width: 900px) {
+  .map-section {
+    height: auto;
+    min-height: 720px;
+  }
+
+  .map-compare-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .map-compare-map,
+  .map-compare-image-wrap {
+    height: 420px;
+  }
 }
 
-.type-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f2937;
-}
+@media (max-width: 768px) {
+  .map-category-buttons {
+    top: 14px;
+    left: 14px;
+    flex-wrap: wrap;
+  }
 
-.val-sub {
-  font-size: 15px;
-  font-weight: 500;
-  color: #334155;
-}
+  .map-category-btn {
+    padding: 8px 14px;
+  }
 
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-block;
-}
-
-.dot.focus {
-  background-color: #d32f2f;
-}
-
-.dot.Eddominant {
-  background-color: #1976d2;
-}
-
-.dot.mixed {
-  background-color: #f9a825;
+  .map-single-view {
+    min-height: 620px;
+  }
 }
