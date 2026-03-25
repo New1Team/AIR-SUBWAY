@@ -21,17 +21,16 @@ services:
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./frontend/config:/etc/nginx/conf.d:ro
     networks:
-      - spark-network      
-
+      - spark-network
 
   backend:
     image: uv:3
     container_name: backend
     volumes:
       - ./backend:/workspace
-    command: ["uv", "run", "fastapi", "run", "--proxy-headers", "--forwarded-allow-ips", "'*'"]
+    command: [ "uv", "run", "fastapi", "run", "--proxy-headers", "--forwarded-allow-ips", "'*'" ]
     networks:
-      - spark-network      
+      - spark-network
 
   streamlit:
     image: uv:1
@@ -40,11 +39,11 @@ services:
       - ./streamlit:/workspace
     command: >
       sh -c "uv pip install --system streamlit pandas sqlalchemy pymysql mariadb && 
-         python -m streamlit run main.py --server.address 0.0.0.0 --server.port 8501"
+         python -m streamlit run main.py --server.address 0.0.0.0 --server.port 8501 --server.enableCORS false --server.enableXsrfProtection false"
     networks:
-      - spark-network  
+      - spark-network
     ports:
-      - "8501:8501" 
+      - "8501:8501"
   spark-master:
     image: apache/spark:4.1.1-java21-python3
     container_name: spark-master
@@ -59,7 +58,7 @@ services:
       - SPARK_SSL_ENABLED=no
     ports:
       - "8080:8080"
-      
+
     networks:
       - spark-network
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
@@ -103,4 +102,3 @@ networks:
 volumes:
   spark-work-1:
   spark-work-2:
-  
