@@ -14,7 +14,7 @@ const NavBar = ({ showSubway = true, showAirport = true }) => {
   };
 
   const goAirport = () => {
-    window.location.href = "http://localhost:8501";
+    window.location.href = "http://aiedu.tplinkdns.com:7210/streamlit/";
   };
 
   return (
