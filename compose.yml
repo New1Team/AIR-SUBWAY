@@ -29,8 +29,6 @@ services:
     container_name: backend
     volumes:
       - ./backend:/workspace
-    ports:
-      - "8000:8000"
     command: ["uv", "run", "fastapi", "run", "--proxy-headers", "--forwarded-allow-ips", "'*'"]
     networks:
       - spark-network      
