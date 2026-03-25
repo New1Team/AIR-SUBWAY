@@ -21,8 +21,8 @@ const ScatterSection = ({ data, max, mid }) => {
         <div className="weekday-scatter-wrap">
           <div className="weekday-scatter-title">직장인 이동 패턴 산점도</div>
 
-          <div className="scatter-chart-box">
-            <ResponsiveContainer width="100%" height={380}>
+          <div className="scatter-chart-box" style={{ display: 'flex', justifyContent: 'center' }}>
+            <ResponsiveContainer width="50%" height={380}>
               <ScatterChart margin={{ top: 18, right: 24, bottom: 26, left: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" />
 
@@ -31,7 +31,7 @@ const ScatterSection = ({ data, max, mid }) => {
                   name="출근 하차"
                   type="number"
                   domain={[0, max]}
-                  ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                  ticks={[0, '', '', '', '']}
                   tickFormatter={(v) => Number(v).toLocaleString()}
                   label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
                   tick={{ fontSize: 12 }}
@@ -41,7 +41,7 @@ const ScatterSection = ({ data, max, mid }) => {
                   dataKey="y"
                   name="퇴근 승차"
                   domain={[0, max]}
-                  ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                  ticks={[0, '', '', '', '']}
                   tickFormatter={(v) => Number(v).toLocaleString()}
                   tick={{ fontSize: 12 }}
                   label={{
@@ -68,7 +68,7 @@ const ScatterSection = ({ data, max, mid }) => {
                   y={mid}
                   stroke="blue"
                   strokeDasharray="4 4"
-                  label={{ value: '중앙점', position: 'right', fill: '#64748b', fontSize: 12 }}
+                  label={{ value: '', position: 'right', fill: '#64748b', fontSize: 12 }}
                 />
 
                 <Tooltip content={<ScatterTooltip />} />
