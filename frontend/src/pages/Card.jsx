@@ -493,35 +493,63 @@ const Card = () => {
               <div className="weekday-scatter-title">직장인 이동 패턴 산점도</div>
 
               <div className="scatter-chart-box">
+                <div style={{ width:'800px', margin:'50px auto 0' }}>
+               {/* 차트크기조절  */}
                 <ResponsiveContainer width="100%" height={380}>
-                  <ScatterChart margin={{ top: 18, right: 24, bottom: 26, left: 8 }}>
+                  <ScatterChart margin={{ top: 18, right: 60, bottom: 50, left: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-
                     <XAxis
                       dataKey="x"
                       name="출근 하차"
                       type="number"
                       domain={[0, MAX]}
-                      ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                      ticks={[0, '', '', '', '']}
                       tickFormatter={(v) => Number(v).toLocaleString()}
-                      label={{ value: '출근 하차합', position: 'insideBottom', offset: -4 }}
-                      tick={{ fontSize: 12 }}
+                      tick={{ fontSize: 14 }}
+                      label={{
+                        content: ({ viewBox }) => {
+                          const { x, width, y } = viewBox;
+                          return (
+                            <text
+                              x={x + width / 2}  
+                              y={y + 50}         
+                              textAnchor="middle"
+                              fill="#666"
+                              fontSize={18}
+                            >
+                              <tspan>출근 하차합</tspan>
+                              <tspan dx="14">(천 명 단위)</tspan>
+                            </text>
+                          );
+                        }
+                      }}
                     />
 
                     <YAxis
                       dataKey="y"
                       name="퇴근 승차"
                       domain={[0, MAX]}
-                      ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                      ticks={[0, '', '', '', '']}
                       tickFormatter={(v) => Number(v).toLocaleString()}
                       tick={{ fontSize: 12 }}
                       label={{
-                        value: '퇴근 승차합',
-                        angle: -90,
-                        position: 'insideLeft',
-                        offset: 14,
-                        style: { textAnchor: 'middle' },
-                      }}
+                        content: ({ viewBox }) => {
+                        const { x, y, height } = viewBox;
+                        return (
+                          <text
+                            x={x - 40}
+                            y={y + height / 2}
+                            transform={`rotate(-90, ${x}, ${y + height / 2})`}
+                            textAnchor="middle"
+                            fill="#666"
+                            fontSize={18}
+                          >
+                            <tspan>퇴근 승차합</tspan>
+                            <tspan dx="12">(천 명 단위)</tspan>  {/* dx로 간격 조절 */}
+                          </text>
+                        );
+                      }
+                    }}
                     />
 
                     {/* 4등분 배경 */}
@@ -548,6 +576,7 @@ const Card = () => {
                     <Scatter name="역" data={data} fill="#6366f1" opacity={0.72} />
                   </ScatterChart>
                 </ResponsiveContainer>
+                </div>
               </div>
 
               <ScatterLegend />

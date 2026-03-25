@@ -267,11 +267,12 @@
   background: #fbfcfe;
   border: 1px solid #e7edf4;
   border-radius: 16px;
-  padding: 18px 22px 10px 16px;
+  padding: 18px 22px;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
-/* 가장 바깥쪽 박스 */
+/* 차트 아래 설명문 박스 */
   .scatter-info-bar {
     margin-top: 14px;
     width: 100%;
