@@ -58,18 +58,18 @@
 }
 
 /* INSIGHTS key명에 맞춘 색상 */
-.dot.focus {
+.dot.Efocus {
   background-color: #fca5a5; /* 빨강 - 업무 중심지 */
 }
 
-.dot.dominantEvening {
+.dot.Edominant {
   background-color: #fde68a; /* 노랑 - 퇴근 유입지 */
 }
 
-.dot.dominantMorning {
+.dot.Mdominant {
   background-color: #86efac; /* 초록 - 출근 유입지 */
 }
 
-.dot.normal {
+.dot.Nnormal {
   background-color: #93c5fd; /* 파랑 - 일반/저유동 */
 }

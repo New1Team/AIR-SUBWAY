@@ -80,15 +80,15 @@
 }
 
 .map-marker-dot.focus {
-  background-color: #fca5a5;
+  background-color: #ff0000;
 }
 
 .map-marker-dot.dominant {
-  background-color: #86efac;
+  background-color: #1976d2;
 }
 
 .map-marker-dot.mixed {
-  background-color: #fde68a;
+  background-color: #ffcc00;
 }
 
 /* 지도 hover */
@@ -315,7 +315,7 @@
   background-color: #d32f2f;
 }
 
-.dot.dominant {
+.dot.Eddominant {
   background-color: #1976d2;
 }
 
