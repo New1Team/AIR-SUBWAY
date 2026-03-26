@@ -14,7 +14,7 @@ const NavBar = ({ showSubway = true, showAirport = true }) => {
   };
 
   const goAirport = () => {
-    window.location.href = "http://aiedu.tplinkdns.com:7210/streamlit/";
+    window.location.href = "/streamlit/";
   };
 
   return (
@@ -33,9 +33,8 @@ const NavBar = ({ showSubway = true, showAirport = true }) => {
 
         {showSubway && (
           <button
-            className={`nav-button ${
-              location.pathname === "/subway" ? "active" : ""
-            }`}
+            className={`nav-button ${location.pathname === "/subway" ? "active" : ""
+              }`}
             onClick={goSubway}
           >
             지하철 분석

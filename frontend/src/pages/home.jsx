@@ -9,7 +9,7 @@ const Home = () => {
   };
 
   const goAirPage = () => {
-    window.open("http://localhost:8501", "_blank");
+    window.open(import.meta.env.VITE_APP_STREAMLIT_URL, "_blank");
   };
 
   return (
