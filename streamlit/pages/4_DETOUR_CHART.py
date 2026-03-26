@@ -1,23 +1,16 @@
 import streamlit as st
 import mariadb
+from db import getConn
 import pandas as pd
 from components.navbar import render_navbar
 from components.style_loader import load_css
-
-conn_params = {
-    "user": "root",
-    "password": "1234",
-    "host": "192.168.0.201",
-    "database": "db_to_air",
-    "port": int(3306),
-}
 
 
 @st.cache_data
 def get_data():
     """데이터베이스에서 우회 분석 데이터를 가져옵니다."""
     try:
-        conn = mariadb.connect(**conn_params)
+        conn = getConn()
         cursor = conn.cursor()
         query = """
         SELECT
@@ -93,7 +86,8 @@ if not df.empty:
 if df is not None and not df.empty:
     st.success("데이터베이스 연결 및 데이터 로드 성공")
 
-    st.markdown('<div class="section-title">조회 조건 설정</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">조회 조건 설정</div>',
+                unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
@@ -115,10 +109,12 @@ if df is not None and not df.empty:
     st.markdown("</div>", unsafe_allow_html=True)
 
     year_df = df[df["년도"] == selected_year]
-    chart_df = year_df if selected_airline == "전체" else year_df[year_df["항공사코드"] == selected_airline]
+    chart_df = year_df if selected_airline == "전체" else year_df[year_df["항공사코드"]
+                                                                == selected_airline]
 
     detour_count = chart_df.groupby("월").size().reset_index(name="우회횟수")
-    total_detours = int(detour_count["우회횟수"].sum()) if not detour_count.empty else 0
+    total_detours = int(
+        detour_count["우회횟수"].sum()) if not detour_count.empty else 0
     monthly_avg = detour_count["우회횟수"].mean() if not detour_count.empty else 0
 
     st.header(f"{selected_year}년 {selected_airline} 우회 데이터")

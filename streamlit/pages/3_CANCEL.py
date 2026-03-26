@@ -1,22 +1,15 @@
 import streamlit as st
 import pandas as pd
 import mariadb
+from db import getConn
 from components.navbar import render_navbar
 from components.style_loader import load_css
-
-conn_params = {
-    "user": "root",
-    "password": "1234",
-    "host": "192.168.0.201",
-    "database": "db_to_air",
-    "port": 3306
-}
 
 
 @st.cache_data
 def get_all_airlines():
     try:
-        conn = mariadb.connect(**conn_params)
+        conn = getConn()
         cursor = conn.cursor()
         query = """
         SELECT DISTINCT `항공사코드`
@@ -36,7 +29,7 @@ def get_all_airlines():
 @st.cache_data
 def get_airline_stats(year):
     try:
-        conn = mariadb.connect(**conn_params)
+        conn = getConn()
         query = f"""
         SELECT `항공사코드`, COUNT(*) AS cnt
         FROM `항공취소분석`
@@ -55,7 +48,7 @@ def get_airline_stats(year):
 @st.cache_data
 def load_cancellation_data(year, airline):
     try:
-        conn = mariadb.connect(**conn_params)
+        conn = getConn()
         query = f"""
         SELECT `년도`, `월`, `일`, `요일`, `항공사코드`, `항공편번호`, `출발공항코드`
         FROM `항공취소분석`
@@ -88,7 +81,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-st.markdown('<div class="section-title">조회 조건 설정</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">조회 조건 설정</div>',
+            unsafe_allow_html=True)
 
 airline_list = get_all_airlines()
 
