@@ -27,7 +27,7 @@ services:
     image: uv:3
     container_name: backend
     environment:
-      - MARIADB_HOST=mysql+pymysql://root:1234@mariadb:3306/seoul_metro_spark
+      - MARIADB_HOST=mysql+pymysql://root:1234@mariadb:3306/seoul_metro_spark?sessionVariables=collation_connection=utf8mb4_unicode_ci
       - FILE_DIR=/workspace/data/seoulmetro_coordinate_2025.csv
       - HOST_IP=backend
       - SPARK_URL=spark://spark-master:7077

@@ -20,13 +20,13 @@ const InfoBar = () => {
             </div>
 
             <div className="type-tag">
-              <span className="dot mixed" />
+              <span className="dot Eddominant" />
               <span className="type-name">우세 지역</span>
               <span className="val-sub">비중 격차 5~49%</span>
             </div>
 
             <div className="type-tag">
-              <span className="dot Eddominant" />
+              <span className="dot mixed" />
               <span className="type-name">복합 지역</span>
               <span className="val-sub">비중 격차 5%↓</span>
             </div>

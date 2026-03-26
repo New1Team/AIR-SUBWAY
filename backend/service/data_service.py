@@ -163,17 +163,17 @@ def get_weekend_line_stations_data(spark, year:int, line:str):
 def get_map_data(spark, year:int, category:str):
     try:
         sql = f"""
-            SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류`, `광고_집행_전략`,     
+            SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류` COLLATE utf8mb4_unicode_ci AS `기본_분류`, `광고_집행_전략`,     
                 CAST(`주거_비중` AS DOUBLE) AS `주거_비중` , 
                 CAST(`산업_비중` AS DOUBLE) AS `산업_비중` , 
                 CAST(`문화_비중` AS DOUBLE) AS `문화_비중`,
                 `src_year`
-            FROM view_광고전략_지도데이터
+            FROM `view_광고전략_지도데이터`
             WHERE `src_year` = {year}
         """
 
         if category and category != "전체":
-            sql += f" AND TRIM(`기본_분류`) = '{category}'"
+            sql += f" AND TRIM(`기본_분류`) COLLATE utf8mb4_unicode_ci = '{category}' COLLATE utf8mb4_unicode_ci"
 
         sql += " ORDER BY `역명`"
         
