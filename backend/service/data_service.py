@@ -2,7 +2,6 @@ from database.spark_session import fetch_jdbc_data
 
 # 지도용 기본 역 위치 데이터
 def map_data(spark, year:int):
-    data = []
     try:
         if spark:
             sql = f"""

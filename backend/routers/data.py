@@ -1,9 +1,6 @@
 from fastapi import APIRouter, Depends
-from core.settings import settings
-from core.constants import db_properties
 from database.spark_session import get_spark
 from pyspark.sql import SparkSession
-from database.spark_session import fetch_jdbc_data
 from service import data_service
 
 router = APIRouter(
