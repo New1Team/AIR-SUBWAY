@@ -1,6 +1,6 @@
 name: "🐞Bug"
 description: "버그 리포트 템플릿"
-labels: ["Bug"]
+labels: ["bug"]
 body:
   - type: textarea
     attributes:
