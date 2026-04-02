@@ -4,19 +4,18 @@ import { api } from "@utils/network";
 import "@assets/Dashboard.css";
 import "@assets/Maps.css";
 
-import Maps from "@pages/Maps";
-
 import InfoBar from "@components/maps/info-bar";
-import MapEvidenceOverlay from "@components/maps/map-evidence-overlay";
-
 import KpiSection from "@components/dashboard/kpi/kpi-section";
 import DashboardTooltip from "@components/dashboard/tooltip/tooltip";
+
 import ScatterSection from "@components/dashboard/scatter/scatter-section";
+
 import WeekendLineSection from "@components/dashboard/weekend/weekend-line-section";
 
 import LoadingOverlay from "@components/common/loading-overlay";
 
 import seoulZoningReference from "@assets/images/seoul-zoning-reference.png";
+import MapCompareSection from "@components/maps/MapCompareSection";
 
 const Card = () => {
   const MAX = 8000000;
@@ -225,7 +224,7 @@ const Card = () => {
       {/* =====================================================
          지도 / 비교 모드 영역
       ====================================================== */}
-      <div className={`box map-section ${compareMode ? "compare-mode" : ""}`}>
+      {/* <div className={`box map-section ${compareMode ? "compare-mode" : ""}`}>
         <button
           type="button"
           className="map-compare-toggle-btn map-compare-toggle-btn--floating"
@@ -258,7 +257,15 @@ const Card = () => {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
+
+      <MapCompareSection
+      compareMode={compareMode}
+      setCompareMode={setCompareMode}
+      selectedYear={selectedYear}
+      imageSrc={seoulZoningReference}
+       imageAlt="서울 지역별 업무지구와 주거지구 참고 이미지"
+      />
 
       <InfoBar />
 
