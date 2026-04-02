@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends
-from core.settings import settings
-from core.constants import db_properties
+from fastapi import APIRouter, Depends, HTTPException
 from database.spark_session import get_spark
 from pyspark.sql import SparkSession
-from database.spark_session import fetch_jdbc_data
 from service import data_service
+from pyspark.sql.functions import col
+from models.spark_model import SearchRequest
+
+# from core.settings import settings
+# from core.constants import db_properties
+# from database.spark_session import fetch_jdbc_data
 
 router = APIRouter(
     prefix="/data",
@@ -71,3 +74,17 @@ def get_weekend_line_stations(year: int, line: str, spark: SparkSession = Depend
 def get_map(year: int, category: str = None, spark: SparkSession = Depends(get_spark)):
     return data_service.get_map_data(spark, year, category)
 
+# 5. 검색창
+@router.post("/search")
+def post_search(request: SearchRequest, spark: SparkSession = Depends(get_spark)):
+    # 스파크에서 해당 검색어에 해당하는 역이름 매칭해서 정보 불러오기
+    # 역이름, 위도, 경도, 지역구분, 우세복합 정보
+    # 기존 fetch_jdbc_data 사용가능할지 고민해보기
+    try:
+        df = spark.read.jdbc(url=settings.db_url, table="테이블명", properties=db_properties)
+        search_result = df.filter(col('역이름').contains(request.keyword))\
+        .select('역이름','위도','경도','지역구분컬럼명', '우세정보컬럼명')\
+        .collect()
+        return [row.asDict() for row in search_result]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -10,3 +10,6 @@ class ColsMapping(BaseModel):
 # 파일명, 매핑리스트 모델
 class FileList(BaseModel):
   file: Dict[str, List[ColsMapping]]
+
+class SearchRequest(BaseModel):
+  keyword: str

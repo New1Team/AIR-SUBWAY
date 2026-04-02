@@ -10,13 +10,16 @@ const MapCompareSection = ({
 }) => {
   return (
     <div className={`box map-section ${compareMode ? "compare-mode" : ""}`}>
-      <button
+      {/* <button
         type="button"
         className="map-compare-toggle-btn map-compare-toggle-btn--floating"
         onClick={() => setCompareMode((prev) => !prev)}
       >
         {compareMode ? "비교 모드 끄기" : "근거 이미지 비교"}
-      </button>
+      </button> */}
+      {/* 검색창 */}
+      {/* api.post('/search', {keyword}) */}
+
 
       {!compareMode ? (
         <div className="map-single-view">
@@ -31,7 +34,7 @@ const MapCompareSection = ({
             </div>
           </div>
 
-          <div className="map-compare-panel">
+          {/* <div className="map-compare-panel">
             <div className="map-compare-panel-title">참고 이미지</div>
             <div className="map-compare-image-wrap">
               <MapEvidenceOverlay
@@ -39,7 +42,7 @@ const MapCompareSection = ({
                 imageAlt={imageAlt}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       )}
     </div>
