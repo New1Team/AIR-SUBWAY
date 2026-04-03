@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+
+// 이 항목 자체가 필요 없을 듯
 const ZoomableReferenceImage = ({ src, alt }) => {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -121,28 +123,28 @@ const ZoomableReferenceImage = ({ src, alt }) => {
   );
 };
 
-const MapEvidenceOverlay = ({
-  imageSrc,
-  imageAlt,
-  title = "분석 비교 참고 이미지",
-  caption = "실제 지역 구조와 분석 결과를 비교하기 위한 참고 이미지입니다.",
-}) => {
-  return (
-    <div className="map-evidence-overlay">
-      <div className="map-evidence-header">
-        <span className="map-evidence-title">{title}</span>
-      </div>
+// const MapEvidenceOverlay = ({
+//   imageSrc,
+//   imageAlt,
+//   title = "분석 비교 참고 이미지",
+//   caption = "실제 지역 구조와 분석 결과를 비교하기 위한 참고 이미지입니다.",
+// }) => {
+//   return (
+//     <div className="map-evidence-overlay">
+//       <div className="map-evidence-header">
+//         <span className="map-evidence-title">{title}</span>
+//       </div>
 
-      <div className="map-evidence-compare-labels">
-        <span className="compare-label compare-label-map">현재 분석 지도</span>
-        <span className="compare-label compare-label-image">참고 이미지</span>
-      </div>
+//       <div className="map-evidence-compare-labels">
+//         <span className="compare-label compare-label-map">현재 분석 지도</span>
+//         <span className="compare-label compare-label-image">참고 이미지</span>
+//       </div>
 
-      <ZoomableReferenceImage src={imageSrc} alt={imageAlt} />
+//       <ZoomableReferenceImage src={imageSrc} alt={imageAlt} />
 
-      <p className="map-evidence-caption">{caption}</p>
-    </div>
-  );
-};
+//       <p className="map-evidence-caption">{caption}</p>
+//     </div>
+//   );
+// };
 
-export default MapEvidenceOverlay;
+// export default MapEvidenceOverlay;

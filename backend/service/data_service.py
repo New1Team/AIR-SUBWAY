@@ -159,26 +159,39 @@ def get_weekend_line_stations_data(spark, year:int, line:str):
         return{"error":str(e)}
 
 # 지도 마커용 광고 전략 데이터
-def get_map_data(spark, year:int, category:str):
+def get_map_data(spark, year:int, category:str, search: str=None):
     try:
-        sql = f"""
-            SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류`, `광고_집행_전략`,     
-                CAST(`주거_비중` AS DOUBLE) AS `주거_비중` , 
-                CAST(`산업_비중` AS DOUBLE) AS `산업_비중` , 
-                CAST(`문화_비중` AS DOUBLE) AS `문화_비중`,
-                `src_year`
-            FROM view_광고전략_지도데이터
-            WHERE `src_year` = {year}
-        """
+        if (search is None):
+            sql = f"""
+                SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류`, `광고_집행_전략`,     
+                    CAST(`주거_비중` AS DOUBLE) AS `주거_비중` , 
+                    CAST(`산업_비중` AS DOUBLE) AS `산업_비중` , 
+                    CAST(`문화_비중` AS DOUBLE) AS `문화_비중`,
+                    `src_year`
+                FROM view_광고전략_지도데이터
+                WHERE `src_year` = {year}
+            """
+        else:
+            sql = f"""
+                SELECT `대표역번호`, `역명`, `위도`, `경도`, `기본_분류`, `광고_집행_전략`,     
+                    CAST(`주거_비중` AS DOUBLE) AS `주거_비중` , 
+                    CAST(`산업_비중` AS DOUBLE) AS `산업_비중` , 
+                    CAST(`문화_비중` AS DOUBLE) AS `문화_비중`,
+                    `src_year`
+                FROM view_광고전략_지도데이터
+                WHERE `src_year` = {year}
+                AND `역명` = '{search}'
+            """
 
-        if category and category != "전체":
+        if category and category != "전체" and search is None:
             sql += f" AND TRIM(`기본_분류`) = '{category}'"
 
         sql += " ORDER BY `역명`"
         
         result_df = fetch_jdbc_data(spark, sql)
         rows = [row.asDict() for row in result_df.collect()]
-        return {"data":rows}
+        print(rows)
+        return {"data":rows, "status": True}
     except Exception as e:
         print(f"'에러: ' {e}")
         return{"error":str(e)}

@@ -12,7 +12,7 @@ export default function useMapMarkers(year, category) {
 
     const fetchMapData = async () => {
       try {
-        const res = await api.get("/data/map", {
+        const res = await api.post("/data/map", {
           params: { year, category },
         });
 

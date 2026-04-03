@@ -13,10 +13,10 @@
 }
 
 /* 일반 모드에서 Maps 컴포넌트가 바로 꽉 차게 */
-.map-section > .map-root,
-.map-single-view > .map-root,
-.map-compare-map > .map-root,
-.map-compare-map > * {
+.map-section>.map-root,
+.map-single-view>.map-root,
+.map-compare-map>.map-root,
+.map-compare-map>* {
   width: 100%;
   height: 100%;
 }
@@ -35,7 +35,7 @@
 /* =========================================================
    [02] 비교 모드 버튼
 ========================================================= */
-.map-compare-toggle-btn--floating {
+/* .map-compare-toggle-btn--floating {
   position: absolute;
   top: 14px;
   right: 14px;
@@ -63,12 +63,12 @@
 
 .map-compare-toggle-btn--floating:active {
   transform: scale(0.97);
-}
+} */
 
 /* =========================================================
    [03] 비교 모드 2열 레이아웃
 ========================================================= */
-.map-compare-layout {
+/* .map-compare-layout {
   width: 100%;
   height: 100%;
   display: grid;
@@ -94,7 +94,7 @@
   font-weight: 800;
   color: #1e293b;
   line-height: 1.2;
-}
+} */
 
 /* =========================================================
    [04] 좌우 패널 공통 박스
@@ -121,27 +121,38 @@
    - 이전엔 grid/center와 evidence 쪽 레이아웃이 섞여 있었음
    - 지금은 overlay 내부 레이아웃이 담당하도록 단순화
 ========================================================= */
-.map-compare-image-wrap {
+/* .map-compare-image-wrap {
   position: relative;
   display: block;
   padding: 0;
   background: #f3f4f6;
-}
+} */
 
 /* =========================================================
-   [06] 지도 카테고리 버튼
+   [06] 지도 카테고리 버튼, 검색 버튼
 ========================================================= */
 .map-category-buttons {
   position: absolute;
   top: 18px;
   left: 18px;
+  right: 18px;
   display: flex;
+  align-items: center;
   gap: 8px;
   z-index: 100;
+  align-items: center;
 }
 
-.map-category-btn {
-  padding: 9px 16px;
+.map-category-btn,
+.map-search-form {
+  height: 42px !important;
+  box-sizing: border-box;
+}
+
+.map-category-btn, .map-search-btn {
+  padding: 0px 16px;
+  height: 46px;
+  min-width: 75px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid #dbe1e8;
   border-radius: 10px;
@@ -151,6 +162,9 @@
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .map-category-btn:hover {
@@ -161,6 +175,17 @@
   background: #2563eb;
   color: #ffffff;
   border-color: #2563eb;
+}
+
+.map-search-form {
+  margin-left: auto; 
+  display: flex;
+  align-items: center;
+  width: 260px;
+  padding: 0 6px 0 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe1e8;
+  border-radius: 10px;
 }
 
 /* =========================================================
@@ -497,8 +522,57 @@
   cursor: pointer;
 }
 
+  /* =========================================================
+   [17] 지도 검색창
+   ****오른쪽 정렬 필요한데 안 먹으니 일단 pass 나중에 손보기*****************
+========================================================= */
+
+.map-search-form {
+  display: flex;
+  align-items: center;
+  width: 260px;
+  padding: 4px 6px 4px 14px;
+  margin: 0 9px 0 130px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe1e8;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease;
+  cursor: text;
+}
+.map-search-form:focus-within {
+  border-color: #3b82f6; 
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+.map-search-input {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: #334155;
+  padding: 8px 0;
+}
+/* 검색버튼 */
+.inner-search-btn {
+  background: #334155;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap; /* 글자가 밑으로 떨어지지 않게 */
+  transition: background 0.2s;
+}
+.inner-search-btn:hover {
+  background: #000000;
+}
+
 /* =========================================================
-   [16] 반응형
+   [16] 반응형 Breack Point(1400, 1200, 992, 768, 576, 그 이하)
 ========================================================= */
 @media (max-width: 1200px) {
   .map-section {
@@ -544,6 +618,7 @@
     top: 14px;
     left: 14px;
     flex-wrap: wrap;
+    display: flex;
   }
 
   .map-category-btn {
@@ -553,4 +628,5 @@
   .map-single-view {
     min-height: 620px;
   }
+
 }

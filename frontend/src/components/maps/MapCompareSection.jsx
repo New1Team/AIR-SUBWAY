@@ -1,5 +1,5 @@
 import Maps from "@pages/Maps";
-import MapEvidenceOverlay from "@components/maps/map-evidence-overlay";
+// import MapEvidenceOverlay from "@components/maps/map-evidence-overlay";
 
 const MapCompareSection = ({
   compareMode,
@@ -17,9 +17,6 @@ const MapCompareSection = ({
       >
         {compareMode ? "비교 모드 끄기" : "근거 이미지 비교"}
       </button> */}
-      {/* 검색창 */}
-      {/* api.post('/search', {keyword}) */}
-
 
       {!compareMode ? (
         <div className="map-single-view">

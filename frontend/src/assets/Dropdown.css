@@ -1,0 +1,81 @@
+/* 드롭다운 전체 감싸는 컨테이너 */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  min-width: 120px; 
+}
+
+/* 클릭하는 메인 버튼 (기존 버튼 스타일 계승) */
+.dropdown-label {
+  width: 100%;
+  padding: 9px 16px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe1e8;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: #334155;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-label:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* 아래로 펼쳐지는 목록함 */
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 8px); /* 버튼 바로 아래 살짝 띄워서 */
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #dbe1e8;
+  border-radius: 10px;
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  z-index: 9999; /* ⭐ 지도 마커보다 무조건 위에 떠야 함 */
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 각 항목(아이템) */
+.dropdown-item {
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+/* 선택된 항목 강조 (필요 시) */
+.dropdown-item.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+/* 나타날 때 부드러운 효과 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from fastapi import APIRouter, Depends
-=======
 from fastapi import APIRouter, Depends, HTTPException
->>>>>>> 5823bf94fe2813ea473f5a6105e6010964a9979d
 from database.spark_session import get_spark
 from pyspark.sql import SparkSession
 from service import data_service
@@ -19,9 +15,10 @@ router = APIRouter(
 )
 
 # 1. 지도용 기본 역 위치 데이터
-@router.get("/")
-def get_data(year: int, spark: SparkSession = Depends(get_spark)):
-    return data_service.map_data(spark, year)
+# 미사용하여 일단 주석처리함. 추후 승인 후 삭제
+# @router.get("/")
+# def get_data(year: int, spark: SparkSession = Depends(get_spark)):
+#     return data_service.map_data(spark, year)
  
 # 2. KPI 데이터
 # - 출근시간 최다 승/하차
@@ -74,21 +71,8 @@ def get_weekend_line_stations(year: int, line: str, spark: SparkSession = Depend
 # 4. 지도 마커용 광고 전략 데이터
 # category: 주거지 / 산업지 / 문화권
 # category 없으면 전체 반환
-@router.get("/map")
-def get_map(year: int, category: str = None, spark: SparkSession = Depends(get_spark)):
-    return data_service.get_map_data(spark, year, category)
-
-# 5. 검색창
-@router.post("/search")
-def post_search(request: SearchRequest, spark: SparkSession = Depends(get_spark)):
-    # 스파크에서 해당 검색어에 해당하는 역이름 매칭해서 정보 불러오기
-    # 역이름, 위도, 경도, 지역구분, 우세복합 정보
-    # 기존 fetch_jdbc_data 사용가능할지 고민해보기
-    try:
-        df = spark.read.jdbc(url=settings.db_url, table="테이블명", properties=db_properties)
-        search_result = df.filter(col('역이름').contains(request.keyword))\
-        .select('역이름','위도','경도','지역구분컬럼명', '우세정보컬럼명')\
-        .collect()
-        return [row.asDict() for row in search_result]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# search1: 역명
+# search2: 기본 분류
+@router.post("/map")
+def get_map(year: int, category: str = None, search: str = None, spark: SparkSession = Depends(get_spark)):
+    return data_service.get_map_data(spark, year, category, search)

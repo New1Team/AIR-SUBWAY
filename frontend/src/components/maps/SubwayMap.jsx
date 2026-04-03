@@ -5,6 +5,7 @@ const SubwayMap = ({
   map,
   setMap,
   center,
+  zoomLevel,
   markers,
   hoveredMarkerId,
   setHoveredMarkerId,
@@ -31,7 +32,7 @@ const SubwayMap = ({
     <div className="map-section">
       <Map
         center={center}
-        level={8}
+        level={zoomLevel}
         style={{ width: "100%", height: "100%" }}
         onCreate={setMap}
       >
