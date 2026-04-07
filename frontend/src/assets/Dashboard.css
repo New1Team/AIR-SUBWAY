@@ -299,7 +299,7 @@
 }
 
 .dot.focus {
-  background-color: #d32f2f;
+  background-color: #ff0000;
 }
 
 .dot.Eddominant {
@@ -307,7 +307,7 @@
 }
 
 .dot.mixed {
-  background-color: #f9a825;
+  background-color: #ffcc00
 }
 
 /* 광고 전략 */

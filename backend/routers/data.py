@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, Depends
-=======
 from fastapi import APIRouter, Depends, HTTPException
->>>>>>> 5823bf94fe2813ea473f5a6105e6010964a9979d
 from database.spark_session import get_spark
 from pyspark.sql import SparkSession
 from service import data_service
