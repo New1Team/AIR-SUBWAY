@@ -5,7 +5,7 @@ import os
 from core.settings import settings
 from core.constants import db_properties
 from database.spark_session import get_spark
-from schemas.spark_schema import FileList
+from models.spark_model import FileList
 
 router = APIRouter(
     prefix="/spark",

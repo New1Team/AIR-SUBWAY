@@ -1,0 +1,26 @@
+name: "💦trouble-shooting"
+description: "시행착오 기록"
+labels: ["trouble-shooting"]
+body:
+  - type: textarea
+    attributes:
+      label: 📄 기능
+      description: 시행착오가 발생한 기능을 작성해 주세요.
+      placeholder: 영역 단위(back/front/db/...) / 라이브러리 단위(pandas, spark..) / 함수 단위로 적어주세욥 !
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ⚠ 발생한 이슈
+      description: 이슈 한가지만 작성해주세요.
+      placeholder: 최대한 세분화 해서 적어주세요!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 💡 취한 액션
+      description: 체크박스 형태로 작성해주세요.
+  - type: textarea
+    attributes:
+      label: 🎉 상향된 결과
+      description: 이전 결과치와 비교하여 상승한 부분을 작성해 주세요.

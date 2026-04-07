@@ -1,0 +1,26 @@
+name: "⚡update"
+description: "기능 업데이트 및 수정"
+labels: ["update"]
+body:
+  - type: textarea
+    attributes:
+      label: 📄 설명
+      description: 변경할 기능에 대한 설명을 작성해 주세요.
+      placeholder: 자세히 적을수록 좋습니다!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✅ 작업할 내용
+      description: 할 일을 체크박스 형태로 작성해주세요.
+      placeholder: 최대한 세분화 해서 적어주세요!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 🌞 변경 코드
+      description: 기존 코드에서(기존 -> 변경 형태) 변경된 부분을 작성해주세요.
+  - type: textarea
+    attributes:
+      label: 🙋🏻 요구사항
+      description: 추가 요구사항이 있다면 작성해 주세요.
